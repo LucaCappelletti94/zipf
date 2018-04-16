@@ -3,6 +3,9 @@
 ## What does it do?
 It builds a zipf out of a directory of files, using multiprocessing since with large amounts of files the process can be very long.
 
+## How much time does it take to process?
+Well, I created a zipf of about 1M text webpages and it took about 10 minutes. For 4k pages it takes about 2 seconds.
+
 ## How do I use it?
 Here's a small example:
 ```python
