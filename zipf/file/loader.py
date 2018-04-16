@@ -43,6 +43,7 @@ class loader:
                     obj = f.read()
                 self._files.put(obj, timeout=self._timeout)
                 self._statistic.add_file()
+        self._statistic.set_loader_done()
         self._statistic.set_dead_process("file loader")
 
     def get_queue(self):
