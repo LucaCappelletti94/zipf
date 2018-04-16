@@ -39,9 +39,9 @@ class cli(ABC):
     def _update(self):
         pass
 
-    def _print_speed(self, label, value):
+    def _print_speed(self, label, value, first_unit="it", second_unit = "s"):
         if value != 0:
-            self._print_label("%s speed"%label, "%s url/s"%round(value, 2))
+            self._print_label("%s speed"%label, "%s %s/%s"%(round(value, 2),first_unit,second_unit))
 
     def _print_fraction(self, label, v1, v2):
         if v2 != 0:

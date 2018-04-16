@@ -1,11 +1,9 @@
-from multiprocessing import Manager, Process
+from multiprocessing import Manager, Pool, Process, cpu_count
 from ...mp.managers import MyManager
-from ...file.loader import loader
 from .statistic_from_dir import statistic_from_dir as statistic
 from .cli_from_dir import cli_from_dir as cli
 
-import queue
-
+import glob
 import json
 import re
 
@@ -21,65 +19,68 @@ class from_dir:
         self._myManager.start()
 
         self._statistic = self._myManager.statistic()
-        self._loader = loader(path, extensions, self._statistic)
+        self._extensions = extensions
+        self._processes_number = cpu_count()
 
         self._file_interface = lambda file: file
         self._word_filter = lambda word: True
         self._words_regex = re.compile(r"\W+")
 
+        self._zipfs = Manager().list()
+
         if self._use_cli:
             self._cli = cli(self._statistic)
 
-        self._files = self._loader.get_queue()
-        self._zipfs = Manager().list()
-
-    def _text_to_zipf(self, identifier):
-        self._statistic.set_live_process("text_to_zipf")
+    def _text_to_zipf(self, paths):
         trie = {}
         n = 0
-        while True:
-            try:
-                if self._statistic.is_loader_done():
-                    timeout = 0.1
+        for path in paths:
+            with open(path, "r") as f:
+                if path.endswith(".json"):
+                    obj = json.load(f)
                 else:
-                    timeout = 10
-                file = self._file_interface(self._files.get(timeout=timeout))
-                if file=="":
-                    continue
-                words = list(filter(self._word_filter, re.split(self._words_regex, file)))
-                if len(words)==0:
-                    continue
-                unit = 1/len(words)
-                for word in words:
-                    if word in trie:
-                        trie[word] = trie[word] + unit
-                    else:
-                        trie[word] = unit
-                n+=1
+                    obj = f.read()
+            file = self._file_interface(obj)
+            if file=="":
+                continue
+            words = list(filter(self._word_filter, re.split(self._words_regex, file)))
+            if len(words)==0:
+                continue
+            unit = 1/len(words)
+            for word in words:
+                if word in trie:
+                    trie[word] = trie[word] + unit
+                else:
+                    trie[word] = unit
+            n+=1
 
-                self._statistic.add_zipf()
-            except queue.Empty:
-                break
-            except Exception as e:
-                with open("test/%s-%s.txt"%(identifier,n), "w") as f:
-                    f.write(traceback.format_exc())
+            self._statistic.add_zipf(step)
 
         self._zipfs.append((n, trie))
-        self._statistic.set_dead_process("text_to_zipf")
 
-    def _merge(self):
-        self._statistic.set_live_process("trie_merger")
-        n1, t1 = self._zipfs.pop()
-        n2, t2 = self._zipfs.pop()
+    def _merge(zipfs2):
+        n1, z1 = zipfs2[0]
+        n2, z2 = zipfs2[1]
 
-        for k, v in t1.items():
-            if k in t2:
-                t2[k] = v + t2[k]
+        for k, v in z1.items():
+            if k in z2:
+                z2[k] = v + z2[k]
             else:
-                t2[k] = v
+                z2[k] = v
 
-        self._zipfs.append((n1+n2, t2))
-        self._statistic.set_dead_process("trie_merger")
+        return (n1+n2, z2)
+
+    def chunks(self, l, n):
+        """Yield successive n-sized chunks from l."""
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
+    def _load_paths(self):
+        files_list = []
+        for extension in self._extensions:
+            files_list += glob.iglob(self._path+"/**/*.%s"%extension)
+        self._statistic.set_total_files(len(files_list))
+        return list(self.chunks(files_list, int(len(files_list)/self._processes_number)))
 
     def set_interface(self, file_interface):
         if file_interface!=None:
@@ -92,51 +93,40 @@ class from_dir:
     def run(self):
         if self._use_cli:
             self._cli.run()
+
         self._statistic.set_phase("Loading file paths")
-        self._loader.run()
+        path_chunks = self._load_paths()
+
         self._statistic.set_phase("Converting files to zipfs")
         processes = []
-        for i in range(8):
-            p = Process(target=self._text_to_zipf, args=(i,), name="Zipf generator n. %s"%i)
-            p.start()
-            processes.append(p)
+        for i in range(self._processes_number):
+            process = Process(target=self._text_to_zipf, args=(path_chunks[i],))
+            process.start()
+            processes.append(process)
         for p in processes:
             p.join()
 
-        self._loader.join()
-
         self._statistic.set_phase("Merging zipfs")
-        processes = []
-        while int(len(self._zipfs)/2)>2:
-            processes = []
-            for i in range(int(len(self._zipfs)/2)):
-                p = Process(target=self._merge, name="Trie merger n. %s"%i)
-                p.start()
-                processes.append(p)
-            for p in processes:
-                p.join()
+        zipfs = self._zipfs
+        with Pool(cpu_count()) as p:
+            while len(zipfs)>=2:
+                zipfs = list(p.imap(from_dir._merge, list(self.chunks(zipfs, 2))))
 
-        self._statistic.set_phase("Merging last 2 trie")
+        self._statistic.set_phase("Normalizing zipfs")
 
-        # final trie merger
-        self._merge()
+        n, zipf = zipfs[0]
 
-        self._statistic.set_phase("Converting trie to dict")
-
-        n, t = self._zipfs.pop()
-        result = {}
-
-        for k, v in t.items():
-            result[k] = v/n
+        for k, v in zipf.items():
+            zipf[k] = v/n
 
         if self._output!=None:
             self._statistic.set_phase("Saving file")
             with open(self._output, "w") as f:
-                json.dump(result, f)
+                json.dump(zipf, f)
 
         self._statistic.done()
 
         if self._use_cli:
             self._cli.join()
 
-        return result
+        return zipf

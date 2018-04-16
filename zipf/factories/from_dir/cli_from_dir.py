@@ -6,11 +6,10 @@ class cli_from_dir(cli):
 
         self._print(self._statistics.get_phase()+"§")
         total_files = self._statistics.get_total_files()
-        loaded_files = self._statistics.get_files()
-        if total_files != 0:
+        zipfs_files = self._statistics.get_zipfs()
+        if zipfs_files != 0:
             self._print_frame()
-            self._print_fraction("Loaded files",loaded_files, total_files)
-            self._print_fraction("Zipfs",self._statistics.get_zipfs(), loaded_files)
+            self._print_fraction("Zipfs", zipfs_files, total_files)
         self._print_speeds()
         self._print_times()
 
@@ -28,4 +27,3 @@ class cli_from_dir(cli):
 
     def _print_speeds(self):
         self._print_speed("Zips speed", self._statistics.get_elaboration_speed())
-        self._print_speed("Loading speed", self._statistics.get_load_speed())

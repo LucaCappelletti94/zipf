@@ -78,6 +78,8 @@ class statistic:
         return self._running_processes
 
     def _get_remaining_time(self, delta, speed):
+        if delta == 0:
+            return "now"
         if speed == 0:
             return "infinite"
         return self._seconds_to_string(delta/speed)
