@@ -1,5 +1,6 @@
 from .factories.from_dir.from_dir import from_dir
 from collections import OrderedDict
+import matplotlib.pyplot as plt
 import json
 
 class zipf:
@@ -22,4 +23,10 @@ class zipf:
             json.load(self._data, f)
 
     def __str__(self):
-        return str(self._data)
+        return str(self._data)    def plot(self):
+    def plot(self):
+        y = [t[1] for t in self.items()]
+
+        plt.figure(figsize=(20,10))
+        plt.plot(range(len(self)), y, 'o', markersize=1)
+        plt.show()
