@@ -1,5 +1,5 @@
 from .factories.from_dir.from_dir import from_dir
-from multiprocessing import Process, cpu_count
+from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
 import math, numbers
 import matplotlib.pyplot as plt
@@ -10,17 +10,26 @@ class zipf:
         self._data = OrderedDict(data)
 
     def from_dir(path, file_interface=None, word_filter=None, output_file=None, use_cli=False):
-        fd = from_dir(path, output_file, use_cli)
-        fd.set_interface(file_interface)
-        fd.set_word_filter(word_filter)
-        data = fd.run()
+        factory = from_dir(path, output_file, use_cli)
+        factory.set_interface(file_interface)
+        factory.set_word_filter(word_filter)
+        data = factory.run()
+        return zipf(data)
+
+    def from_file(path, file_interface=None, word_filter=None, output_file=None):
+        factory = from_dir(path, output_file, use_cli)
+        factory.set_interface(file_interface)
+        factory.set_word_filter(word_filter)
+        data = factory.run()
         return zipf(data)
 
     def load(path):
+        """Loads the zipf from a file where it was first stored"""
         with open(path, "r") as f:
             return zipf(json.load(f))
 
     def save(self, path):
+        """Saves the zipf as a dictionary to a given json file"""
         with open(path, "w") as f:
             json.load(self._data, f)
 
@@ -57,22 +66,30 @@ class zipf:
     def __add__(self, other):
         return zipf({ k: self.get(k) + other.get(k) for k in set(self) | set(other) })
 
-    def KL(self, other, keys_set=None):
+    def KL(self, other):
         """Kullback–Leibler divergence defined for subset"""
         """https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence"""
         total = 0
-        if keys_set==None:
-            keys_set = set(self.keys()) & set(other.keys())
-        for key in keys_set:
+        for key in set(self.keys()) & set(other.keys()):
             v = self[key]
             total += v*math.log(v/other[key])
         return total
 
+    def _emiJSD(one, two):
+        total = 0
+        for key, value in one.items():
+            total += value*math.log(2*value/(two.get(key) + value))
+        return total/2
+
     def JSD(self, other):
         """Jensen–Shannon divergence"""
         """https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence"""
-        M = 0.5*(self + other)
-        return 0.5*(self.KL(M, self.keys()) + other.KL(M, other.keys()))
+        # with Pool(2) as p:
+        #     return sum(list(p.starmap(zipf._emiJSD, [(self, other), (other, self)])))
+        return zipf._emiJSD(self, other) + zipf._emiJSD(other, self)
+
+    def merge(self, other):
+        return { k: (self.get(k) + other.get(k))*0.5 for k in set(self) | set(other) }
 
     def get(self, key, default=0):
         return self._data.get(key, default)
