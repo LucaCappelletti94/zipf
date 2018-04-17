@@ -57,11 +57,13 @@ class zipf:
     def __add__(self, other):
         return zipf({ k: self.get(k) + other.get(k) for k in set(self) | set(other) })
 
-    def KL(self, other):
+    def KL(self, other, keys_set=None):
         """Kullback–Leibler divergence defined for subset"""
         """https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence"""
         total = 0
-        for key in set(self.keys()) & set(other.keys()):
+        if keys_set==None:
+            keys_set = set(self.keys()) & set(other.keys())
+        for key in keys_set:
             v = self[key]
             total += v*math.log(v/other[key])
         return total
@@ -70,7 +72,7 @@ class zipf:
         """Jensen–Shannon divergence"""
         """https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence"""
         M = 0.5*(self + other)
-        return 0.5*(self.KL(M) + other.KL(M))
+        return 0.5*(self.KL(M, self.keys()) + other.KL(M, other.keys()))
 
     def get(self, key, default=0):
         return self._data.get(key, default)
