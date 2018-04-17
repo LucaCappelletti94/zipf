@@ -1,4 +1,5 @@
 from .factories.from_dir.from_dir import from_dir
+from multiprocessing import Process, cpu_count
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 import json
@@ -22,8 +23,54 @@ class zipf:
         with open(path, "w") as f:
             json.load(self._data, f)
 
+    def _chunks(self, l, n):
+        """Yield successive n-sized chunks from l."""
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
+    def map(self, operation, other):
+        other_chunked = list(self._chunks(other.items(), len(other)/cpu_count()))
+        processes = []
+        for i in range(cpu_count()):
+            p = Process(target=self._iteration, args=(operation, other_chunked[i]))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+
     def __str__(self):
-        return str(self._data)    def plot(self):
+        return str(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __contains__(self, key):
+        return key in self._data
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            return zipf(list(self.items())[key])
+        return self._data[key]
+
+    def __setitem__(self, key, value):
+        self._data[key] = value
+
+    def items(self):
+        return self._data.items()
+
+    def _add(self, other_items):
+        for k, v in other_items:
+            if k in self:
+                self[k] += v
+            else:
+                self[k] = v
+
+    def __add__(self, other):
+        self.map(self._add, other)
+
     def plot(self):
         y = [t[1] for t in self.items()]
 
