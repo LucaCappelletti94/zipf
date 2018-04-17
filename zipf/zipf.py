@@ -1,6 +1,7 @@
 from .factories.from_dir.from_dir import from_dir
 from multiprocessing import Process, cpu_count
 from collections import OrderedDict
+import math
 import matplotlib.pyplot as plt
 import json
 
@@ -23,21 +24,6 @@ class zipf:
         with open(path, "w") as f:
             json.load(self._data, f)
 
-    def _chunks(self, l, n):
-        """Yield successive n-sized chunks from l."""
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
-    def map(self, operation, other):
-        other_chunked = list(self._chunks(other.items(), len(other)/cpu_count()))
-        processes = []
-        for i in range(cpu_count()):
-            p = Process(target=self._iteration, args=(operation, other_chunked[i]))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
-
     def __str__(self):
         return str(dict(self._data))
 
@@ -58,18 +44,18 @@ class zipf:
     def __setitem__(self, key, value):
         self._data[key] = value
 
+    def KL(self, other):
+        total = 0
+        for key in set(self.keys()) & set(other.keys()):
+            v = self[key]
+            total += v*math.log(v/other[key])
+        return total
+
     def items(self):
         return self._data.items()
 
-    def _add(self, other_items):
-        for k, v in other_items:
-            if k in self:
-                self[k] += v
-            else:
-                self[k] = v
-
-    def __add__(self, other):
-        self.map(self._add, other)
+    def keys(self):
+        return self._data.keys()
 
     def plot(self):
         y = [t[1] for t in self.items()]
