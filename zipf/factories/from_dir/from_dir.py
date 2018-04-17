@@ -44,9 +44,11 @@ class from_dir:
                     obj = f.read()
             file = self._file_interface(obj)
             if file=="":
+                self._statistic.add_empty_file()
                 continue
             words = list(filter(self._word_filter, re.split(self._words_regex, file)))
             if len(words)==0:
+                self._statistic.add_empty_wordlist()
                 continue
             unit = 1/len(words)
             for word in words:
@@ -55,7 +57,6 @@ class from_dir:
                 else:
                     trie[word] = unit
             n+=1
-
             self._statistic.add_zipf()
 
         self._zipfs.append((n, trie))
