@@ -1,4 +1,5 @@
 from .factories.from_dir.from_dir import from_dir
+from .factories.from_file.from_file import from_file
 from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
 import math, numbers
@@ -17,7 +18,7 @@ class zipf:
         return zipf(data)
 
     def from_file(path, file_interface=None, word_filter=None, output_file=None):
-        factory = from_dir(path, output_file, use_cli)
+        factory = from_file(path, output_file)
         factory.set_interface(file_interface)
         factory.set_word_filter(word_filter)
         data = factory.run()
@@ -34,7 +35,7 @@ class zipf:
             json.load(self._data, f)
 
     def __str__(self):
-        return str(dict(self._data))
+        return json.dumps(self._data, indent=2)
 
     def __len__(self):
         return len(self._data)
@@ -62,6 +63,7 @@ class zipf:
             raise ValueError("Moltiplication is allowed only with int and floats.")
 
     __rmul__ = __mul__
+    __repr__ = __str__
 
     def __add__(self, other):
         return zipf({ k: self.get(k) + other.get(k) for k in set(self) | set(other) })
@@ -103,9 +105,39 @@ class zipf:
     def update(self, value):
         return self._data.update(value)
 
+    def min(self, value):
+        return min(self, key=self.get)
+
+    def max(self, value):
+        return max(self, key=self.get)
+
     def plot(self):
         y = [t[1] for t in self.items()]
 
         plt.figure(figsize=(20,10))
         plt.plot(range(len(self)), y, 'o', markersize=1)
         plt.show()
+
+    def remap(self, remapper):
+        remapped = zipf()
+        for key, value in remapper.items():
+            if key in self:
+                remapped[key] = self[key]
+        return remapped
+
+    def plot_remapped(self, remapper):
+        x1 = []
+        y1 = []
+        y2 = []
+        for i, key in enumerate(remapper):
+            if key in self:
+                x1.append(i)
+                y1.append(self[key])
+            y2.append(remapper[key])
+
+        plt.figure(figsize=(20,10))
+        plt.plot(range(len(remapper)), y2, '-', markersize=1)
+        plt.plot(x1, y1, 'o', markersize=3)
+        plt.show()
+
+
