@@ -120,7 +120,7 @@ class from_dir:
         for k, v in zipf.items():
             zipf[k] = v/n
 
-        sorted_zipf = OrderedDict(sorted(zipf.items(), key=lambda t: t[0]))
+        sorted_zipf = OrderedDict(sorted(zipf.items(), key=lambda t: t[1], reverse=True))
 
         if self._output!=None:
             self._statistic.set_phase("Saving file")

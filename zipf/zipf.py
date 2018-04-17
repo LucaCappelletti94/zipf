@@ -1,9 +1,10 @@
 from .factories.from_dir.from_dir import from_dir
+from collections import OrderedDict
 import json
 
 class zipf:
     def __init__(self, data):
-        self._data = data
+        self._data = OrderedDict(data)
 
     def from_dir(path, file_interface=None, word_filter=None, output_file=None, use_cli=False):
         fd = from_dir(path, output_file, use_cli)
