@@ -4,8 +4,6 @@ import os
 import json
 import re
 
-MyManager.register('statistic', statistic)
-
 class from_file:
     def __init__(self, path, output=None):
 
@@ -31,7 +29,7 @@ class from_file:
 
     def run(self):
         with open(self._path, "r") as f:
-            if path.endswith(".json"):
+            if self._path.endswith(".json"):
                 obj = json.load(f)
             else:
                 obj = f.read()
@@ -62,3 +60,5 @@ class from_file:
             self._statistic.set_phase("Saving file")
             with open(self._output, "w") as f:
                 json.dump(sorted_zipf, f)
+
+        return sorted_zipf
