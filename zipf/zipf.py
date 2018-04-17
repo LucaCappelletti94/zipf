@@ -39,7 +39,7 @@ class zipf:
             p.join()
 
     def __str__(self):
-        return str(self._data)
+        return str(dict(self._data))
 
     def __len__(self):
         return len(self._data)
