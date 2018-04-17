@@ -2,6 +2,7 @@ from multiprocessing import Manager, Pool, Process, cpu_count
 from ...mp.managers import MyManager
 from .statistic_from_dir import statistic_from_dir as statistic
 from .cli_from_dir import cli_from_dir as cli
+from collections import OrderedDict
 
 import glob
 import json
@@ -54,7 +55,7 @@ class from_dir:
                     trie[word] = unit
             n+=1
 
-            self._statistic.add_zipf(step)
+            self._statistic.add_zipf()
 
         self._zipfs.append((n, trie))
 
@@ -119,14 +120,16 @@ class from_dir:
         for k, v in zipf.items():
             zipf[k] = v/n
 
+        sorted_zipf = OrderedDict(sorted(zipf.items(), key=lambda t: t[0]))
+
         if self._output!=None:
             self._statistic.set_phase("Saving file")
             with open(self._output, "w") as f:
-                json.dump(zipf, f)
+                json.dump(sorted_zipf, f)
 
         self._statistic.done()
 
         if self._use_cli:
             self._cli.join()
 
-        return zipf
+        return sorted_zipf
