@@ -1,5 +1,6 @@
 from multiprocessing import Manager, Pool, Process, cpu_count
 from ...mp.managers import MyManager
+from ...utils.chunks import chunks
 from .statistic_from_dir import statistic_from_dir as statistic
 from .cli_from_dir import cli_from_dir as cli
 from collections import OrderedDict
@@ -71,17 +72,12 @@ class from_dir:
 
         return (n1+n2, z2)
 
-    def chunks(self, l, n):
-        """Yield successive n-sized chunks from l."""
-        for i in range(0, len(l), n):
-            yield l[i:i + n]
-
     def _load_paths(self):
         files_list = []
         for extension in self._extensions:
             files_list += glob.iglob(self._path+"/**/*.%s"%extension)
         self._statistic.set_total_files(len(files_list))
-        return list(self.chunks(files_list, int(len(files_list)/self._processes_number)))
+        return list(chunks(files_list, int(len(files_list)/self._processes_number)))
 
     def set_interface(self, file_interface):
         if file_interface!=None:
@@ -111,7 +107,7 @@ class from_dir:
         zipfs = self._zipfs
         with Pool(cpu_count()) as p:
             while len(zipfs)>=2:
-                zipfs = list(p.imap(from_dir._merge, list(self.chunks(zipfs, 2))))
+                zipfs = list(p.imap(from_dir._merge, list(chunks(zipfs, 2))))
 
         self._statistic.set_phase("Normalizing zipfs")
 
