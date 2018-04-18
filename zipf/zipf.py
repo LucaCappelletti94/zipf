@@ -48,7 +48,7 @@ class zipf:
 
     def __getitem__(self, key):
         if isinstance(key, slice):
-            return zipf(list(self.items())[key])
+            return zipf(self._data[key])
         return self._data[key]
 
     def __setitem__(self, key, value):
@@ -80,7 +80,7 @@ class zipf:
     def _emiJSD(one, two):
         total = 0
         for key, value in one.items():
-            total += value*math.log(2*value/(two.get(key) + value))
+            total += value*math.log(2*value/(two.get(key, 0) + value))
         return total/2
 
     def JSD(self, other):
@@ -89,9 +89,6 @@ class zipf:
         # with Pool(2) as p:
         #     return sum(list(p.starmap(zipf._emiJSD, [(self, other), (other, self)])))
         return zipf._emiJSD(self, other) + zipf._emiJSD(other, self)
-
-    def merge(self, other):
-        return { k: (self.get(k) + other.get(k))*0.5 for k in set(self) | set(other) }
 
     def get(self, key, default=0):
         return self._data.get(key, default)
