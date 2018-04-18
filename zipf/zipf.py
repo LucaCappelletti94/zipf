@@ -80,17 +80,17 @@ class zipf:
         total = 0
         for key in set(self.keys()) & set(other.keys()):
             v = self[key]
-            total += v*math.log(v/other[key])
+            total += v*math.log(v/other[key],2)
         return total
 
     def _emiJSD(self, other):
         total = 0
         for key, value in self._data.items():
-        	ov = other.get(key)
-        	if ov:
-	            total += value*math.log(2*value/(ov + value), 2)
-	        else:
-	        	total += value
+            ov = other.get(key)
+            if ov:
+                total += value*math.log(2*value/(ov + value), 2)
+            else:
+                total += value
         return total
 
     def JSD(self, other):
