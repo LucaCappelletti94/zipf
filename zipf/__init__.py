@@ -1,1 +1,1 @@
-from zipf import zipf
+from .zipf import zipf
