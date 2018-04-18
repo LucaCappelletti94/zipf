@@ -1,4 +1,4 @@
-from zipf.zipf import zipf
+from zipf import zipf
 
 my_zipf = zipf.from_dir(
     path = "path/to/my/dir",

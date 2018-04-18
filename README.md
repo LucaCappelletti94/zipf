@@ -9,7 +9,7 @@ Well, I created a zipf of about 1M text webpages and it took about 10 minutes. F
 ## How do I use it?
 Here's a small example:
 ```python
-from zipf.zipf import zipf
+from zipf import zipf
 
 my_zipf = zipf.from_dir(
     path = "path/to/my/dir",
