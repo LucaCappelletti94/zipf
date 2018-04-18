@@ -60,15 +60,22 @@ class zipf:
     def __mul__(self, value):
         """Multiplies each value of the zipf by given value"""
         if isinstance(value, numbers.Number):
-            return zipf({k: v*self[k] for k in self})
+            return zipf({k: self[k]*value for k in self})
+        elif isinstance(value, zipf):
+            return zipf({ k: self.get(k)*value.get(k) for k in set(self) | set(value) })
         else:
-            raise ValueError("Moltiplication is allowed only with int and floats.")
+            raise ValueError("Moltiplication is allowed only with numbers or zipf objects.")
 
     def __truediv__(self, value):
         """Divides each value of the zipf by given value"""
-        if value==0:
-            raise ValueError("Division by zero.")
-        return self.__mul__(1/value)
+        if isinstance(value, numbers.Number):
+            if value==0:
+                raise ValueError("Division by zero.")
+            return zipf({k: self[k]/value for k in self})
+        elif isinstance(value, zipf):
+            return zipf({ k: self.get(k)/value.get(k) for k in set(self) | set(value) })
+        else:
+            raise ValueError("Division is allowed only with numbers or zipf objects.")
 
     __rmul__ = __mul__
     __repr__ = __str__
