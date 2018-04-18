@@ -6,6 +6,7 @@ from .cli_from_dir import cli_from_dir as cli
 from collections import OrderedDict
 
 import glob
+import math
 import json
 import re
 
@@ -78,7 +79,7 @@ class from_dir:
         for extension in self._extensions:
             files_list += glob.iglob(self._path+"/**/*.%s"%extension)
         self._statistic.set_total_files(len(files_list))
-        return list(chunks(files_list, int(len(files_list)/self._processes_number)))
+        return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
     def set_interface(self, file_interface):
         if file_interface!=None:
@@ -93,14 +94,12 @@ class from_dir:
             self._cli.run()
 
         self._statistic.set_phase("Loading file paths")
-        path_chunks = self._load_paths()
-
-        self._statistic.set_phase("Converting files to zipfs")
         processes = []
-        for i in range(self._processes_number):
-            process = Process(target=self._text_to_zipf, args=(path_chunks[i],))
+        for i, ch in enumerate(self._load_paths()):
+            process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
+        self._statistic.set_phase("Converting files to zipfs")
         for p in processes:
             p.join()
 
