@@ -12,6 +12,7 @@ class zipf:
         self._data = OrderedDict(data)
 
     def from_dir(path, file_interface=None, word_filter=None, output_file=None, use_cli=False):
+        """Realizes a zipf from the text files in the given directory"""
         factory = from_dir(path, output_file, use_cli)
         factory.set_interface(file_interface)
         factory.set_word_filter(word_filter)
@@ -19,6 +20,7 @@ class zipf:
         return zipf(data)
 
     def from_file(path, file_interface=None, word_filter=None, output_file=None):
+        """Realizes a zipf from the given text file"""
         factory = from_file(path, output_file)
         factory.set_interface(file_interface)
         factory.set_word_filter(word_filter)
@@ -56,14 +58,14 @@ class zipf:
         self._data[key] = value
 
     def __mul__(self, value):
+        """Multiplies each value of the zipf by given value"""
         if isinstance(value, numbers.Number):
-            tmp_zipf = zipf()
-            tmp_zipf.update((x, y*value) for x, y in self.items())
-            return tmp_zipf
+            return zipf({k: v*self[k] for k in self})
         else:
             raise ValueError("Moltiplication is allowed only with int and floats.")
 
     def __truediv__(self, value):
+        """Divides each value of the zipf by given value"""
         if value==0:
             raise ValueError("Division by zero.")
         return self.__mul__(1/value)
@@ -72,11 +74,13 @@ class zipf:
     __repr__ = __str__
 
     def __add__(self, other):
-        return zipf({ k: self.get(k) + other.get(k) for k in set(self) | set(other) })
+        """Sums two zipf"""
+        if isinstance(other, zipf):
+            return zipf({ k: self.get(k) + other.get(k) for k in set(self) | set(other) })
+        raise ValueError("Given argument is not a zipf object")
 
     def KL(self, other):
         """Kullback–Leibler divergence defined for subset"""
-        """https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence"""
         total = 0
         for key in set(self.keys()) & set(other.keys()):
             v = self[key]
@@ -95,7 +99,6 @@ class zipf:
 
     def JSD(self, other):
         """Jensen–Shannon divergence"""
-        """https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence"""
         return (self._emiJSD(other._data) + other._emiJSD(self._data))/2
 
     def get(self, key, default=0):
@@ -114,12 +117,15 @@ class zipf:
         return self._data.update(value)
 
     def min(self, value):
+        """Returns the value with minimal frequency in the zipf"""
         return min(self, key=self.get)
 
     def max(self, value):
+        """Returns the value with maximal frequency in the zipf"""
         return max(self, key=self.get)
 
     def plot(self):
+        """Plots the zipf"""
         y = [t[1] for t in self.items()]
 
         plt.figure(figsize=(20,10))
@@ -127,6 +133,7 @@ class zipf:
         plt.show()
 
     def remap(self, remapper):
+        """Remaps the zipf to the order of the other zipf, deleting elements when not present in both."""
         remapped = zipf()
         for key, value in remapper.items():
             if key in self:
@@ -134,23 +141,28 @@ class zipf:
         return remapped
 
     def renormalize(self):
-        return self/sum(list(self.values()))
+        """Renormalizes a list so that the sum is equal to one"""
+        if sum(list(self.values()))!=1:
+            return self/sum(list(self.values()))
 
     def mean(self):
+        """Calculates the mean frequency"""
         return np.mean(list(self.values()))
 
     def var(self):
+        """Calculates the variance"""
         return np.var(list(self.values()))
 
     def cut(self, _min=0, _max=1):
-    	cut_zipf = zipf()
-    	for k,v in self.items():
-    		if v > _min and v <= _max:
-    			cut_zipf[k] = v
-    	return cut_zipf.renormalize()
-
+        """Returns a normalized zipf without elements below _min or above _max"""
+        cut_zipf = zipf()
+        for k,v in self.items():
+            if v > _min and v <= _max:
+                cut_zipf[k] = v
+        return cut_zipf.renormalize()
 
     def plot_remapped(self, remapper):
+        """Plots a zipf remapped over another zipf"""
         x1 = []
         y1 = []
         y2 = []
@@ -164,5 +176,3 @@ class zipf:
         plt.plot(range(len(remapper)), y2, '-', markersize=1)
         plt.plot(x1, y1, 'o', markersize=3)
         plt.show()
-
-
