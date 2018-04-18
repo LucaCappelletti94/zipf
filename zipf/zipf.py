@@ -5,6 +5,7 @@ from collections import OrderedDict
 import math, numbers
 import matplotlib.pyplot as plt
 import json
+import numpy as np
 
 class zipf:
     def __init__(self, data={}):
@@ -129,6 +130,13 @@ class zipf:
 
     def renormalize(self):
         return self/sum(self.values())
+
+    def mean(self):
+        return np.mean(self.values())
+
+    def var(self):
+        return np.var(self.values())
+
     def plot_remapped(self, remapper):
         x1 = []
         y1 = []
