@@ -62,6 +62,11 @@ class zipf:
         else:
             raise ValueError("Moltiplication is allowed only with int and floats.")
 
+    def __truediv__(self, value):
+        if value==0:
+            raise ValueError("Division by zero.")
+        return self.__mul__(1/value)
+
     __rmul__ = __mul__
     __repr__ = __str__
 
