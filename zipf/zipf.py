@@ -62,7 +62,7 @@ class zipf:
         if isinstance(value, numbers.Number):
             return zipf({k: self[k]*value for k in self})
         elif isinstance(value, zipf):
-            return zipf({ k: self.get(k)*value.get(k) for k in set(self) | set(value) })
+            return zipf({ k: self.get(k,0)*value.get(k,0) for k in set(self) | set(value) })
         else:
             raise ValueError("Moltiplication is allowed only with numbers or zipf objects.")
 
@@ -73,7 +73,7 @@ class zipf:
                 raise ValueError("Division by zero.")
             return zipf({k: self[k]/value for k in self})
         elif isinstance(value, zipf):
-            return zipf({ k: self.get(k)/value.get(k) for k in set(self) & set(value) })
+            return zipf({ k: self.get(k,0)/value.get(k) for k in set(value) })
         else:
             raise ValueError("Division is allowed only with numbers or zipf objects.")
 
