@@ -160,6 +160,9 @@ class zipf:
         """Calculates the variance"""
         return np.var(list(self.values()))
 
+    def sort(self):
+        return zipf(sorted(self.items(), key=lambda t: t[1], reverse=True))
+
     def cut(self, _min=0, _max=1):
         """Returns a normalized zipf without elements below _min or above _max"""
         cut_zipf = zipf()
