@@ -83,18 +83,20 @@ class zipf:
             total += v*math.log(v/other[key])
         return total
 
-    def _emiJSD(one, two):
+    def _emiJSD(self, other):
         total = 0
-        for key, value in one.items():
-            total += value*math.log(2*value/(two.get(key, 0) + value))
-        return total/2
+        for key, value in self._data.items():
+        	ov = other.get(key)
+        	if ov:
+	            total += value*math.log(2*value/(ov + value), 2)
+	        else:
+	        	total += value
+        return total
 
     def JSD(self, other):
         """Jensen–Shannon divergence"""
         """https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence"""
-        # with Pool(2) as p:
-        #     return sum(list(p.starmap(zipf._emiJSD, [(self, other), (other, self)])))
-        return zipf._emiJSD(self, other) + zipf._emiJSD(other, self)
+        return (self._emiJSD(other._data) + other._emiJSD(self._data))/2
 
     def get(self, key, default=0):
         return self._data.get(key, default)
@@ -132,13 +134,21 @@ class zipf:
         return remapped
 
     def renormalize(self):
-        return self/sum(self.values())
+        return self/sum(list(self.values()))
 
     def mean(self):
-        return np.mean(self.values())
+        return np.mean(list(self.values()))
 
     def var(self):
-        return np.var(self.values())
+        return np.var(list(self.values()))
+
+    def cut(self, _min=0, _max=1):
+    	cut_zipf = zipf()
+    	for k,v in self.items():
+    		if v > _min and v <= _max:
+    			cut_zipf[k] = v
+    	return cut_zipf.renormalize()
+
 
     def plot_remapped(self, remapper):
         x1 = []
