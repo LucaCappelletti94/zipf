@@ -127,6 +127,8 @@ class zipf:
                 remapped[key] = self[key]
         return remapped
 
+    def renormalize(self):
+        return self/sum(self.values())
     def plot_remapped(self, remapper):
         x1 = []
         y1 = []
