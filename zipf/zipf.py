@@ -102,6 +102,9 @@ class zipf:
     def items(self):
         return self._data.items()
 
+    def values(self):
+        return self._data.values()
+
     def keys(self):
         return self._data.keys()
 
