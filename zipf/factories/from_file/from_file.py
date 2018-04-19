@@ -19,9 +19,6 @@ class from_file:
             self._word_filter = word_filter
 
     def run(self, path, output=None):
-        if not os.path.isfile(path):
-            raise ValueError("Given file %s does not exists"%path)
-
         with open(path, "r") as f:
             if path.endswith(".json"):
                 obj = json.load(f)
@@ -51,7 +48,6 @@ class from_file:
         sorted_zipf = OrderedDict(sorted(zipf.items(), key=lambda t: t[1], reverse=True))
 
         if output!=None:
-            self._statistic.set_phase("Saving file")
             with open(output, "w") as f:
                 json.dump(sorted_zipf, f)
 
