@@ -1,5 +1,4 @@
-from ...statistic.statistic import statistic
-from ...statistic.derivative import derivative
+from ...statistic import statistic, derivative
 import time
 
 class statistic_from_dir(statistic):
