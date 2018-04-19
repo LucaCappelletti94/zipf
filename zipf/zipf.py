@@ -1,6 +1,5 @@
 from __future__ import division
-from .factories.from_dir.from_dir import from_dir
-from .factories.from_file.from_file import from_file
+from .factories import from_dir, from_file
 from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
 import math, numbers

@@ -1,6 +1,6 @@
 from multiprocessing import Manager, Pool, Process, cpu_count
 from ...mp.managers import MyManager
-from ...utils.chunks import chunks
+from ...utils import chunks
 from .statistic_from_dir import statistic_from_dir as statistic
 from .cli_from_dir import cli_from_dir as cli
 from collections import OrderedDict
