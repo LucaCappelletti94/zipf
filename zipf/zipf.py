@@ -21,10 +21,10 @@ class zipf:
 
     def from_file(path, file_interface=None, word_filter=None, output_file=None):
         """Realizes a zipf from the given text file"""
-        factory = from_file(path, output_file)
+        factory = from_file()
         factory.set_interface(file_interface)
         factory.set_word_filter(word_filter)
-        data = factory.run()
+        data = factory.run(path, output_file)
         return zipf(data)
 
     def load(path):
