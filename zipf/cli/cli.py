@@ -24,6 +24,13 @@ class cli(ABC):
 
                 self._update()
 
+                processes = self._statistics.get_running_processes().items()
+
+                if len(processes)>0:
+                    self._print_frame()
+                    for name, number in processes:
+                        self._print_label("Process %s"%name, number)
+
                 self._print_all()
 
             curses.echo()
