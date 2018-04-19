@@ -13,8 +13,10 @@ import re
 MyManager.register('statistic', statistic)
 
 class from_dir:
-    def __init__(self, path, output=None, use_cli=False, extensions = ["json"]):
-        self._path = path
+    def __init__(self, paths, output=None, use_cli=False, extensions = ["json"]):
+        if isinstance(paths, str):
+            paths = [paths]
+        self._path = paths
         self._output = output
         self._use_cli = use_cli
 
@@ -77,7 +79,8 @@ class from_dir:
     def _load_paths(self):
         files_list = []
         for extension in self._extensions:
-            files_list += glob.iglob(self._path+"/**/*.%s"%extension)
+            for path in self._paths:
+                files_list += glob.iglob(path+"/**/*.%s"%extension)
         self._statistic.set_total_files(len(files_list))
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
