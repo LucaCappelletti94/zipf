@@ -5,19 +5,10 @@ import json
 import re
 
 class from_file:
-    def __init__(self, path, output=None):
-
-        if not os.path.isfile(path):
-            raise ValueError("Given file %s does not exists"%path)
-
-        self._path = path
-        self._output = output
-
+    def __init__(self):
         self._file_interface = lambda file: file
         self._word_filter = lambda word: True
         self._words_regex = re.compile(r"\W+")
-
-
 
     def set_interface(self, file_interface):
         if file_interface!=None:
@@ -27,9 +18,12 @@ class from_file:
         if word_filter!= None:
             self._word_filter = word_filter
 
-    def run(self):
-        with open(self._path, "r") as f:
-            if self._path.endswith(".json"):
+    def run(self, path, output=None):
+        if not os.path.isfile(path):
+            raise ValueError("Given file %s does not exists"%path)
+
+        with open(path, "r") as f:
+            if path.endswith(".json"):
                 obj = json.load(f)
             else:
                 obj = f.read()
@@ -56,9 +50,9 @@ class from_file:
 
         sorted_zipf = OrderedDict(sorted(zipf.items(), key=lambda t: t[1], reverse=True))
 
-        if self._output!=None:
+        if output!=None:
             self._statistic.set_phase("Saving file")
-            with open(self._output, "w") as f:
+            with open(output, "w") as f:
                 json.dump(sorted_zipf, f)
 
         return sorted_zipf
