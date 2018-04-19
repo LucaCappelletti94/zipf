@@ -1,4 +1,4 @@
-from ...cli.cli import cli
+from ...cli import cli
 
 class cli_from_dir(cli):
     def _update(self):
@@ -22,13 +22,6 @@ class cli_from_dir(cli):
 
         self._print_speeds()
         self._print_times()
-
-        processes = self._statistics.get_running_processes().items()
-
-        if len(processes)>0:
-            self._print_frame()
-            for name, number in processes:
-                self._print_label("Process %s"%name, number)
 
     def _print_times(self):
         self._print_frame()
