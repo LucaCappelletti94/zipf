@@ -61,7 +61,12 @@ class jsd:
         for path in paths:
             divergence = []
             divergence.append(self._file_label(path))
-            file_zipf = zipf(self._factory.run(path))
+
+            try:
+                file_zipf = zipf(self._factory.run(path))
+            except ValueError as e:
+                continue
+
             for _zipf in self._zipfs:
                 divergence.append(_zipf.JSD(file_zipf))
             divergences.append(divergence)
