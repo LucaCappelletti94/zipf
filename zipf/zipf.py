@@ -1,3 +1,4 @@
+from __future__ import division
 from .factories.from_dir.from_dir import from_dir
 from .factories.from_file.from_file import from_file
 from multiprocessing import Pool, cpu_count
@@ -51,7 +52,7 @@ class zipf:
 
     def __getitem__(self, key):
         if isinstance(key, slice):
-            return zipf(self._data[key])
+            return zipf(list(self.items())[key])
         return self._data[key]
 
     def __setitem__(self, key, value):
