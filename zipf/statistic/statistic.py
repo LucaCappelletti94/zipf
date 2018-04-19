@@ -21,25 +21,20 @@ class statistic:
     def set_start_time(self):
         self._start_time = time.time()
 
-    def set_live_process(self, name):
+    def _edit_dict(self, my_dict, key, delta):
         self._lock.acquire()
-        delta = 1
-        if name in self._running_processes.keys():
-            delta += self._running_processes[name]
-        self._running_processes.update({
-            name: delta
+        if key in my_dict:
+            delta += my_dict[key]
+        my_dict.update({
+            key: delta
         })
         self._lock.release()
 
+    def set_live_process(self, name):
+        self._edit_dict(self._running_processes, name, 1)
+
     def set_dead_process(self, name):
-        self._lock.acquire()
-        delta = -1
-        if name in self._running_processes.keys():
-            delta += self._running_processes[name]
-        self._running_processes.update({
-            name: delta
-        })
-        self._lock.release()
+        self._edit_dict(self._running_processes, name, -1)
 
     def set_phase(self, phase):
         self._phase = phase
