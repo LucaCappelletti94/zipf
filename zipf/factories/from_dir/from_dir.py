@@ -39,6 +39,7 @@ class from_dir:
     def _text_to_zipf(self, paths):
         trie = {}
         n = 0
+        self._statistic.set_live_process("text to zipf converter")
         for path in paths:
             with open(path, "r") as f:
                 if path.endswith(".json"):
@@ -63,6 +64,7 @@ class from_dir:
             self._statistic.add_zipf()
 
         self._zipfs.append((n, trie))
+        self._statistic.set_dead_process("text to zipf converter")
 
     def _merge(zipfs2):
         n1, z1 = zipfs2[0]
