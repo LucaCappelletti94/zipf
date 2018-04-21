@@ -1,5 +1,4 @@
 from __future__ import division
-from .factories import from_dir, from_file
 from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
 import math, numbers
@@ -10,22 +9,6 @@ import numpy as np
 class zipf:
     def __init__(self, data={}):
         self._data = OrderedDict(data)
-
-    def from_dir(path, file_interface=None, word_filter=None, output_file=None, use_cli=False):
-        """Realizes a zipf from the text files in the given directory"""
-        factory = from_dir(path, output_file, use_cli)
-        factory.set_interface(file_interface)
-        factory.set_word_filter(word_filter)
-        data = factory.run()
-        return zipf(data)
-
-    def from_file(path, file_interface=None, word_filter=None, output_file=None):
-        """Realizes a zipf from the given text file"""
-        factory = from_file()
-        factory.set_interface(file_interface)
-        factory.set_word_filter(word_filter)
-        data = factory.run(path, output_file)
-        return zipf(data)
 
     def load(path):
         """Loads the zipf from a file where it was first stored"""
@@ -52,7 +35,7 @@ class zipf:
     def __getitem__(self, key):
         if isinstance(key, slice):
             return zipf(list(self.items())[key])
-        return self._data[key]
+        return self.get(key)
 
     def __setitem__(self, key, value):
         self._data[key] = value
@@ -73,7 +56,7 @@ class zipf:
                 raise ValueError("Division by zero.")
             return zipf({k: self[k]/value for k in self})
         elif isinstance(value, zipf):
-            return zipf({ k: self.get(k,0)/value.get(k) for k in set(value) })
+            return zipf({ k: self.get(k)/value.get(k) for k in set(self) & set(value) })
         else:
             raise ValueError("Division is allowed only with numbers or zipf objects.")
 
@@ -123,11 +106,11 @@ class zipf:
     def update(self, value):
         return self._data.update(value)
 
-    def min(self, value):
+    def min(self):
         """Returns the value with minimal frequency in the zipf"""
         return min(self, key=self.get)
 
-    def max(self, value):
+    def max(self):
         """Returns the value with maximal frequency in the zipf"""
         return max(self, key=self.get)
 
