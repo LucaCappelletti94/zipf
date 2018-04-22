@@ -7,4 +7,4 @@ class zipf_factory:
         self._word_filter = word_filter
 
     def run(self, _zipf):
-        return _zipf.sort().renormalize()
+        return _zipf.sort().normalize()

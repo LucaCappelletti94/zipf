@@ -2,7 +2,7 @@ from multiprocessing import Process, cpu_count, Manager, Lock
 
 from ..mp.managers import MyManager
 from ..utils import chunks
-from ..factories import from_file
+from ..factories import zipf_from_file
 from ..zipf import zipf
 
 from .batch_statistic import batch_statistic as statistic
@@ -35,7 +35,7 @@ class jsd:
         if self._use_cli:
             self._cli = cli(self._statistic)
 
-        self._factory = from_file()
+        self._factory = zipf_from_file()
 
     def set_interface(self, file_interface):
         self._factory.set_interface(file_interface)
@@ -63,7 +63,7 @@ class jsd:
             divergence.append(self._file_label(path))
 
             try:
-                file_zipf = zipf(self._factory.run(path))
+                file_zipf = self._factory.run(path)
             except ValueError as e:
                 continue
 
