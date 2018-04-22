@@ -11,7 +11,7 @@ class zipf_from_text(zipf_from_list):
         """Extract a zipf distribution from the given text"""
         if text=="":
             raise ValueError("The given text is empty")
-        return list(filter(self._word_filter, re.split(self._words_regex, text)))
+        return list(filter(self._word_filter, filter(None, re.split(self._words_regex, text))))
 
     def run(self, text):
         return super().run(self._extract_words(text))
