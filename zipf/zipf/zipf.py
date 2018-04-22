@@ -1,7 +1,7 @@
 from __future__ import division
+from typing import Union
 from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
-from typing import Union
 import math, numbers
 import matplotlib.pyplot as plt
 import json
@@ -81,10 +81,10 @@ class zipf:
             frequency: a float number representing the frequency
 
         """
-        if isinstance(value, numbers.Number):
+        if isinstance(frequency, numbers.Number):
             self._data[key] = frequency
-
-        raise ValueError("A frequency must be a number.")
+        else:
+            raise ValueError("A frequency must be a number.")
 
     def __mul__(self, value: Union['zipf', numbers.Number]) -> 'zipf':
         """Multiplies each value of the zipf by either a numeric value or the corrisponding word frequency in the other zipf.
@@ -136,6 +136,19 @@ class zipf:
         """
         if isinstance(other, zipf):
             return zipf({ k: self[k] + other[k] for k in set(self) | set(other) })
+        raise ValueError("Given argument is not a zipf object")
+
+    def __sub__(self, other: 'zipf') -> 'zipf':
+        """Subtracts two zipf
+            Args:
+                other: a given zipf to be subtracted
+
+            Returns:
+                The subtracted zipfs
+
+        """
+        if isinstance(other, zipf):
+            return zipf({ k: self[k] - other[k] for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
     def KL(self, other: 'zipf') -> float:
@@ -235,6 +248,7 @@ class zipf:
         """
         if sum(list(self.values()))!=1:
             return self/sum(list(self.values()))
+        return zipf(self._data)
 
     def mean(self)->float:
         """Determines the mean frequency"""
