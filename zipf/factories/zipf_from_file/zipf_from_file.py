@@ -1,8 +1,5 @@
 from ...factories import zipf_from_text
 
-import os
-import json
-
 class zipf_from_file(zipf_from_text):
     def __init__(self):
         super().__init__()
