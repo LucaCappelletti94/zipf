@@ -15,9 +15,9 @@ class zipf_from_url(zipf_from_text):
         return self._request_interface(r)
 
     def run(self, url):
-        """Loads and extracts a zipf from the given file"""
+        """Loads and extracts a zipf from the given url"""
         return super().run(self._download_file(url))
 
     def enrich(self, url, _zipf):
-        """Loads and enriches a given zipf from the given file"""
+        """Loads and enriches a given zipf from the given url"""
         return super().enrich(self._download_file(url), _zipf)
