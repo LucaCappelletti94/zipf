@@ -5,6 +5,11 @@
 ## What does it do?
 The zipf package was realized to simplify creations and operations with zipf distributions, like sum, subtraction, mutiplications, divisions, slicing, statical operations such as mean, variance and much more.
 
+## How do I get it?
+Just type into your terminal:
+
+`pip install zipf`
+
 ## How much time does it take to process?
 Well, I created a zipf of about 1M text webpages and it took about 5 minutes. For 4k pages it takes about 1-2 seconds.
 
