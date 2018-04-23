@@ -152,33 +152,18 @@ class zipf:
             return zipf({ k: self[k] - other[k] for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
-    def KL(self, other: 'zipf') -> float:
-        """Determines the Kullback–Leibler divergence on the subset of both zipfs events, in log2.
-
-            Args:
-                other: the zipf to which determine the KL divergence.
-
-            Returns:
-                A float number representing the KL divergence
-        """
-        total = 0
-        for key in set(self.keys()) & set(other.keys()):
-            v = self[key]
-            total += v*math.log(v/other[key],2)
-        return total
-
     def _emiJSD(self, other: 'zipf') -> float:
         total = 0
         other_data = other._data
         for key, value in self._data.items():
-            ov = other.get(key)
+            ov = other_data.get(key,0)
             if ov:
-                total += value*math.log(2*value/(ov + value), 2)
+                total += value*math.log(2*value/(ov + value))
             else:
-                total += value
+                total += value*0.6931471806
         return total
 
-    def JSD(self, other: 'zipf') -> float:
+    def jensen_shannon(self, other: 'zipf') -> float:
         """Determines the Jensen–Shannon divergence on both zipfs events, in log2.
 
             Args:
@@ -188,6 +173,98 @@ class zipf:
                 A float number representing the JS divergence
         """
         return (self._emiJSD(other) + other._emiJSD(self))/2
+
+    def kullback_leibler(self, other: 'zipf') -> float:
+        """Determines the Kullback–Leibler divergence on the subset of both zipfs events, in log2.
+
+            Args:
+                other: the zipf to which determine the KL divergence.
+
+            Returns:
+                A float number representing the KL divergence
+        """
+        total = 0
+        sd = self._data
+        od = other._data
+        for key in set(self.keys()) & set(other.keys()):
+            v = sd[key]
+            total += v*math.log(v/od[key])
+        return total
+
+    def hellinger(self, other: 'zipf') -> float:
+        """Determines the hellinger distance on the subset of both zipfs events, in log2.
+
+            Args:
+                other: the zipf to which determine the hellinger distance.
+
+            Returns:
+                A float number representing the hellinger distance
+        """
+        total = 0
+        sd = self._data
+        od = other._data
+        for key in set(self.keys()) & set(other.keys()):
+            total += (math.sqrt(sd[key])-math.sqrt(od[key]))**2
+        return math.sqrt(total)/math.sqrt(2)
+
+    def total_variation(self, other: 'zipf') -> float:
+        """Determines the Total Variation distance on the zipfs.
+
+            Args:
+                other: the zipf to which determine the TV distance.
+
+            Returns:
+                A float number representing the TV distance
+        """
+        total = 0
+        sd = self._data
+        od = other._data
+        for key in set(self.keys()) | set(other.keys()):
+            total += abs(sd[key] - od[key])
+        return total
+
+    def _bhattacharyya_coefficient(self, other: 'zipf') -> float:
+        """Determines the bhattacharyya coefficient of the zipfs.
+
+            Args:
+                other: the zipf to which determine the bhattacharyya coefficient .
+
+            Returns:
+                A float number representing the bhattacharyya coefficient
+        """
+        total = 0
+        sd = self._data
+        od = other._data
+        for key in set(self.keys()) & set(other.keys()):
+            total += math.sqrt(sd[key]*od[key])
+        return total
+
+    def bhattacharyya(self, other: 'zipf') -> float:
+        """Determines the bhattacharyya distance of the zipfs.
+
+            Args:
+                other: the zipf to which determine the bhattacharyya distance .
+
+            Returns:
+                A float number representing the bhattacharyya distance
+        """
+        return -math.log(self._bhattacharyya_coefficient(other))
+
+    def mahalanobis(self, other: 'zipf') -> float:
+        """Determines the mahalanobis distance of the zipfs.
+
+            Args:
+                other: the zipf to which determine the mahalanobis distance .
+
+            Returns:
+                A float number representing the mahalanobis distance
+        """
+        total = 0
+        sd = self._data
+        od = other._data
+        for key in set(self.keys()) | set(other.keys()):
+            total += (sd[key]-od[key])**2
+        return math.sqrt(total)
 
     def items(self):
         """Retrieves the zipf items"""
@@ -262,9 +339,10 @@ class zipf:
     def cut(self, _min=0, _max=1)->'zipf':
         """Returns a zipf without elements below _min or above _max"""
         cut_zipf = zipf()
+        cd = cut_zipf._data
         for k,v in self.items():
             if v > _min and v <= _max:
-                cut_zipf[k] = v
+                cd[k] = v
         return cut_zipf
 
     def plot(self,  plot_style = 'o'):
@@ -283,8 +361,8 @@ class zipf:
         for i, key in enumerate(remapper):
             if key in self:
                 x1.append(i)
-                y1.append(self[key])
-            y2.append(remapper[key])
+                y1.append(self._data[key])
+            y2.append(remapper._data[key])
 
         plt.figure(figsize=(20,10))
         plt.plot(range(len(remapper)), y2, '-', markersize=1)
