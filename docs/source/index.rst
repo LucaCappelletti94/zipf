@@ -1,4 +1,4 @@
-.. include:: ../../zipf/ZIPF.rst
+.. include:: ../../zipf/README.rst
 
 .. toctree::
    :maxdepth: 2

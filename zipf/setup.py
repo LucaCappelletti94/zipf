@@ -1,61 +1,120 @@
-from setuptools import setup, find_packages
-# To use a consistent encoding
-from codecs import open
-from os import path
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-here = path.abspath(path.dirname(__file__))
+# Note: To use the 'upload' functionality of this file, you must:
+#   $ pip install twine
 
-# Get the long description from the relevant file
-with open(path.join(here, 'ZIPF.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+import io
+import os
+import sys
+from shutil import rmtree
 
+from setuptools import find_packages, setup, Command
+
+# Package meta-data.
+NAME = 'zipf'
+DESCRIPTION = 'The zipf package was realized to simplify creations and operations with zipf distributions.'
+URL = 'https://github.com/LucaCappelletti94/zipf'
+EMAIL = 'cappelletti.luca94@gmail.com'
+AUTHOR = 'Luca Cappelletti'
+REQUIRES_PYTHON = '>=3.6.0'
+VERSION = "1.0.3"
+
+# What packages are required for this module to be executed?
+REQUIRED = [
+    # 'requests', 'maya', 'records',
+]
+
+# The rest you shouldn't have to touch too much :)
+# ------------------------------------------------
+# Except, perhaps the License and Trove Classifiers!
+# If you do change the License, remember to change the Trove Classifier for that!
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+# Import the README and use it as the long-description.
+# Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
+with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = '\n' + f.read()
+
+# Load the package's __version__.py module as a dictionary.
+about = {}
+if not VERSION:
+    with open(os.path.join(here, NAME, '__version__.py')) as f:
+        exec(f.read(), about)
+else:
+    about['__version__'] = VERSION
+
+
+class UploadCommand(Command):
+    """Support setup.py upload."""
+
+    description = 'Build and publish the package.'
+    user_options = []
+
+    @staticmethod
+    def status(s):
+        """Prints things in bold."""
+        print('\033[1m{0}\033[0m'.format(s))
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            self.status('Removing previous builds…')
+            rmtree(os.path.join(here, 'dist'))
+        except OSError:
+            pass
+
+        self.status('Building Source and Wheel (universal) distribution…')
+        os.system('{0} setup.py sdist bdist_wheel --universal'.format(sys.executable))
+
+        self.status('Uploading the package to PyPi via Twine…')
+        os.system('twine upload dist/*')
+
+        self.status('Pushing git tags…')
+        os.system('git tag v{0}'.format(about['__version__']))
+        os.system('git push --tags')
+
+        sys.exit()
+
+
+# Where the magic happens:
 setup(
-    name='zipf',
-
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.1',
-
-    description='A package to create and work with zipf distributions',
+    name=NAME,
+    version=about['__version__'],
+    description=DESCRIPTION,
     long_description=long_description,
+    author=AUTHOR,
+    author_email=EMAIL,
+    python_requires=REQUIRES_PYTHON,
+    url=URL,
+    packages=find_packages(exclude=('tests',)),
+    # If your package is a single module, use this instead of 'packages':
+    # py_modules=['mypackage'],
 
-    # The project's main homepage.
-    url='https://github.com/LucaCappelletti94/zipf',
-
-    # Author details
-    author='Luca Cappelletti',
-    author_email='cappelletti.luca94@gmail.com',
-
-    # Choose your license
+    # entry_points={
+    #     'console_scripts': ['mycli=mymodule:cli'],
+    # },
+    install_requires=REQUIRED,
+    include_package_data=True,
     license='MIT',
-
-    # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
-        'Development Status :: 5 - Production/Stable',
-
-        # Indicate who your project is intended for
-        'Intended Audience :: Information Technology',
-        'Topic :: Scientific/Engineering :: Information Analysis',
-
-        # Pick your license as you wish (should match "license" above)
+        # Trove classifiers
+        # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: MIT License',
-
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3'
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-
-    # List run-time dependencies here.  These will be installed by pip when
-    # your project is installed. For an analysis of "install_requires" vs pip's
-    # requirements files see:
-    # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[]
+    # $ setup.py publish support.
+    cmdclass={
+        'upload': UploadCommand,
+    },
 )
