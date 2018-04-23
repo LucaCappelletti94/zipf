@@ -51,7 +51,7 @@ class zipf_from_dir(zipf_from_file):
         files_number = len(files_list)
         if not files_number:
         	raise ValueError("The given path does not contain files")
-        self._statistic.set_total_files(len(files_list))
+        self._statistic.set_total_files(files_number)
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
     def run(self, path = None, extensions = [], paths=[]):
@@ -64,6 +64,7 @@ class zipf_from_dir(zipf_from_file):
 
         if path:
             paths.append(path)
+        self._paths = []
         self._paths = paths
         self._extensions = extensions
 

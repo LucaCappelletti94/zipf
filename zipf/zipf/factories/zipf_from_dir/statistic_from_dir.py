@@ -8,7 +8,7 @@ class statistic_from_dir(statistic):
         self._total_files = 0
         self._empty_files = 0
         self._empty_wordlists = 0
-        self._estimate_update_timeout = 0.1
+        self._estimate_update_timeout = 1
         self._last_estimate_update = 0
         self._elaboration_speed = derivative(1, resolution=100)
         self._loader_done = False
