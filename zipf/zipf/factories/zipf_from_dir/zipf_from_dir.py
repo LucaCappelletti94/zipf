@@ -8,6 +8,7 @@ from .cli_from_dir import cli_from_dir as cli
 
 import glob
 import math
+import re
 
 MyManager.register('statistic', statistic)
 
@@ -43,9 +44,20 @@ class zipf_from_dir(zipf_from_file):
 
     def _load_paths(self):
         files_list = []
-        for extension in self._extensions:
-            for path in self._paths:
-                files_list += glob.iglob(path+"/**/*.%s"%extension)
+        paths = []
+        for path in self._paths:
+	        if len(self._extensions):
+	        	for extension in self._extensions:
+	        		paths.append(path+"/**/*.%s"%extension)
+	        else:
+	        	paths.append(path+"/**/*.*")
+
+        for path in paths:
+            files_list += glob.iglob(path)
+
+        files_number = len(files_list)
+        if not files_number:
+        	raise ValueError("The given path does not contain files")
         self._statistic.set_total_files(len(files_list))
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 

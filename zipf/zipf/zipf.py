@@ -31,7 +31,7 @@ class zipf:
         with open(path, "r") as f:
             return zipf(json.load(f))
 
-    def save(self, path):
+    def save(self, path: str):
         """Saves the zipf as a dictionary to a given json file
 
         Args:
@@ -81,8 +81,9 @@ class zipf:
             frequency: a float number representing the frequency
 
         """
-        if isinstance(frequency, numbers.Number):
-            self._data[key] = frequency
+
+        if isinstance(frequency, (int, float)):
+        	self._data[key] = frequency
         else:
             raise ValueError("A frequency must be a number.")
 

@@ -4,17 +4,28 @@ from ..zipf_factory import zipf_factory
 class zipf_from_list(zipf_factory):
     def __init__(self):
         super().__init__()
+        self._word_filter = None
+
+    def set_word_filter(self, word_filter):
+        """Sets the function that filters words"""
+        self._word_filter = word_filter
 
     def _create_zipf(self, elements, _zipf):
+
+        if self._word_filter:
+            elements = list(filter(self._word_filter, elements))
+
         elements_number = len(elements)
 
         if elements_number==0:
-            raise ValueError("Empty word list")
+            return _zipf
 
         unit = 1/elements_number
 
+        zd = _zipf._data
+
         for element in elements:
-            _zipf[element] = _zipf[element] + unit
+            zd[element] = zd.get(element, 0) + unit
 
         return _zipf
 
