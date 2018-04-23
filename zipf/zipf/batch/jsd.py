@@ -1,6 +1,6 @@
 from multiprocessing import Process, cpu_count, Manager, Lock
 
-from ..mp.managers import MyManager
+from ..mp import MyManager
 from ..utils import chunks
 from ..factories import zipf_from_file
 from ..zipf import zipf
