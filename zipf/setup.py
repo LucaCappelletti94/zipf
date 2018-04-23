@@ -18,11 +18,11 @@ URL = 'https://github.com/LucaCappelletti94/zipf'
 EMAIL = 'cappelletti.luca94@gmail.com'
 AUTHOR = 'Luca Cappelletti'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    # 'requests', 'maya', 'records',
+    'requests'
 ]
 
 # The rest you shouldn't have to touch too much :)
