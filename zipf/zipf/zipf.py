@@ -216,14 +216,6 @@ class zipf:
         """Returns the value with maximal frequency in the zipf"""
         return max(self, key=self.get)
 
-    def plot(self):
-        """Plots the zipf"""
-        y = [t[1] for t in self.items()]
-
-        plt.figure(figsize=(20,10))
-        plt.plot(range(len(self)), y, 'o', markersize=1)
-        plt.show()
-
     def remap(self, remapper:'zipf')->'zipf':
         """Returns a remapped zipf to the order of the other zipf, deleting elements when not present in both.
 
@@ -274,7 +266,15 @@ class zipf:
                 cut_zipf[k] = v
         return cut_zipf
 
-    def plot_remapped(self, remapper):
+    def plot(self,  plot_style = 'o'):
+        """Plots the zipf"""
+        y = [t[1] for t in self.items()]
+
+        plt.figure(figsize=(20,10))
+        plt.plot(range(len(self)), y, plot_style, markersize=1)
+        plt.show()
+
+    def plot_remapped(self, remapper, plot_style = 'o'):
         """Plots a zipf remapped over another zipf"""
         x1 = []
         y1 = []
@@ -287,5 +287,5 @@ class zipf:
 
         plt.figure(figsize=(20,10))
         plt.plot(range(len(remapper)), y2, '-', markersize=1)
-        plt.plot(x1, y1, 'o', markersize=3)
+        plt.plot(x1, y1, plot_style, markersize=3)
         plt.show()
