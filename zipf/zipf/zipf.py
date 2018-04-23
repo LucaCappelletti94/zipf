@@ -39,7 +39,7 @@ class zipf:
 
         """
         with open(path, "w") as f:
-            json.load(self._data, f)
+            json.dump(self._data, f)
 
     def __str__(self) -> str:
         """Prints a json dictionary representing the zipf"""
