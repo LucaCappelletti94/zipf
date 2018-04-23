@@ -17,13 +17,6 @@ class zipf_from_dir(zipf_from_file):
         super().__init__()
         self._use_cli = use_cli
 
-        self._myManager = MyManager()
-        self._myManager.start()
-        self._statistic = self._myManager.statistic()
-
-        if self._use_cli:
-            self._cli = cli(self._statistic)
-
     def _text_to_zipf(self, paths):
         z = zipf()
         n = 0
@@ -62,6 +55,12 @@ class zipf_from_dir(zipf_from_file):
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
     def run(self, path = None, extensions = [], paths=[]):
+        self._myManager = MyManager()
+        self._myManager.start()
+        self._statistic = self._myManager.statistic()
+
+        if self._use_cli:
+            self._cli = cli(self._statistic)
 
         if path:
             paths.append(path)
