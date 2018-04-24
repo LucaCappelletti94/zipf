@@ -4,6 +4,7 @@ from codecs import open
 from os import path
 import sys
 import os
+from zipf.__version__ import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -11,15 +12,13 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-version = '1.0.7'
-
 setup(
     name='zipf',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=version,
+    version=__version__,
 
     description='A package to create and work with zipf distributions',
     long_description=long_description,
