@@ -10,14 +10,17 @@ import numpy as np
 class zipf:
     """The zipf class represents a zipf distribution and offers various tools to edit it easily"""
 
-    def __init__(self, data={}):
+    def __init__(self, data=None):
         """Creates a zipf from the given dictionary
 
         Args:
             data: The dictionary with the zipf information.
 
         """
-        self._data = OrderedDict(data)
+        if data:
+            self._data = OrderedDict(data)
+        else:
+            self._data = OrderedDict({})
 
     def load(path: str) -> 'zipf':
         """Loads a zipf from the given path.
@@ -82,8 +85,8 @@ class zipf:
 
         """
 
-        if isinstance(frequency, (int, float)):
-        	self._data[key] = frequency
+        if self.is_number(frequency):
+            self._data[key] = frequency
         else:
             raise ValueError("A frequency must be a number.")
 
@@ -97,7 +100,7 @@ class zipf:
                 The multiplied zipf
 
         """
-        if isinstance(value, numbers.Number):
+        if self.is_number(value):
             return zipf({k: self[k]*value for k in self})
         elif isinstance(value, zipf):
             return zipf({ k: self.get(k)*value.get(k) for k in set(self) | set(value) })
@@ -114,7 +117,7 @@ class zipf:
                 The divided zipf
 
         """
-        if isinstance(value, numbers.Number):
+        if self.is_number(value):
             if value==0:
                 raise ValueError("Division by zero.")
             return zipf({k: self[k]/value for k in self})
@@ -151,6 +154,9 @@ class zipf:
         if isinstance(other, zipf):
             return zipf({ k: self[k] - other[k] for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
+
+    def is_number(self, value):
+        return isinstance(value, (int, float))
 
     def _emiJSD(self, other: 'zipf') -> float:
         total = 0
