@@ -69,5 +69,5 @@ def status(s):
     print('\033[1m{0}\033[0m'.format(s))
 
 status('Pushing git tags…')
-os.system('git tag v{0}'.format(version))
+os.system('git tag v{0}'.format(__version__))
 os.system('git push --tags')
