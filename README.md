@@ -19,6 +19,34 @@ Well, I created a zipf of about 1M text webpages and it took about 5 minutes. Fo
 ## How do I use it?
 The (work in progress at the current time) [documentation](http://zipf.readthedocs.io/en/latest/) is now available.
 
+## Calculating distances and divergence
+Here's some examples on how to use the divergence beetween zipf distributions:
+
+```python
+from zipf import zipf
+
+my_first_zipf=zipf.load("my_first_zipf.json")
+my_second_zipf=zipf.load("my_second_zipf.json")
+
+print("Kullback-Leibler: %s"%my_first_zipf.kullback_leibler(my_second_zipf))
+"""Kullback-Leibler: 1.0505221625158134"""
+
+print("Jensen-Shannon: %s"%my_first_zipf.jensen_shannon(my_second_zipf))
+"""Jensen-Shannon: 0.3322320406625018"""
+
+print("Hellinger: %s"%my_first_zipf.hellinger(my_second_zipf))
+"""Hellinger: 0.5317798727121287"""
+
+print("Total Variation: %s"%my_first_zipf.total_variation(my_second_zipf))
+"""Total Variation: 1.2389058569153246"""
+
+print("Bhattacharyya: %s"%my_first_zipf.bhattacharyya(my_second_zipf))
+"""Bhattacharyya: 0.5588102416138747"""
+
+print("Mahalanobis: %s"%my_first_zipf.mahalanobis(my_second_zipf))
+"""Mahalanobis: 0.046677899925634724"""
+```
+
 ## Creting a zipf using a zipf_factory
 Here's a couple of examples:
 
