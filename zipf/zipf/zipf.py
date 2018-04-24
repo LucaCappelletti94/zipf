@@ -226,7 +226,7 @@ class zipf:
         sd = self._data
         od = other._data
         for key in set(self.keys()) | set(other.keys()):
-            total += abs(sd[key] - od[key])
+            total += abs(sd.get(key,0) - od.get(key,0))
         return total
 
     def _bhattacharyya_coefficient(self, other: 'zipf') -> float:
@@ -269,7 +269,7 @@ class zipf:
         sd = self._data
         od = other._data
         for key in set(self.keys()) | set(other.keys()):
-            total += (sd[key]-od[key])**2
+            total += (sd.get(key,0) - od.get(key,0))**2
         return math.sqrt(total)
 
     def items(self):
