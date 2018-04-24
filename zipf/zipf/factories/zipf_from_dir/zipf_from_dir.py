@@ -55,13 +55,6 @@ class zipf_from_dir(zipf_from_file):
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
     def run(self, path = None, extensions = None, paths=None):
-        self._myManager = MyManager()
-        self._myManager.start()
-        self._statistic = self._myManager.statistic()
-
-        if self._use_cli:
-            self._cli = cli(self._statistic)
-
         if path:
             if paths:
                 paths.append(path)
@@ -72,6 +65,13 @@ class zipf_from_dir(zipf_from_file):
             self._paths = paths
         else:
             raise ValueError("No valid paths were given")
+
+        self._myManager = MyManager()
+        self._myManager.start()
+        self._statistic = self._myManager.statistic()
+
+        if self._use_cli:
+            self._cli = cli(self._statistic)
 
         self._extensions = []
         if extensions:
