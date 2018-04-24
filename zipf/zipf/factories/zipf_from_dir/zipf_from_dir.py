@@ -39,22 +39,22 @@ class zipf_from_dir(zipf_from_file):
         files_list = []
         paths = []
         for path in self._paths:
-	        if len(self._extensions):
-	        	for extension in self._extensions:
-	        		paths.append(path+"/**/*.%s"%extension)
-	        else:
-	        	paths.append(path+"/**/*.*")
+            if len(self._extensions):
+                for extension in self._extensions:
+                    paths.append(path+"/**/*.%s"%extension)
+            else:
+                paths.append(path+"/**/*.*")
 
         for path in paths:
             files_list += glob.iglob(path)
 
         files_number = len(files_list)
         if not files_number:
-        	raise ValueError("The given path does not contain files")
+            raise ValueError("The given path does not contain files")
         self._statistic.set_total_files(files_number)
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
-    def run(self, path = None, extensions = [], paths=[]):
+    def run(self, path = None, extensions = None, paths=None):
         self._myManager = MyManager()
         self._myManager.start()
         self._statistic = self._myManager.statistic()
@@ -63,10 +63,19 @@ class zipf_from_dir(zipf_from_file):
             self._cli = cli(self._statistic)
 
         if path:
-            paths.append(path)
-        self._paths = []
-        self._paths = paths
-        self._extensions = extensions
+            if paths:
+                paths.append(path)
+            else:
+                paths = [path]
+            self._paths = paths
+        elif paths:
+            self._paths = paths
+        else:
+            raise ValueError("No valid paths were given")
+
+        self._extensions = []
+        if extensions:
+            self._extensions = extensions
 
         self._processes_number = cpu_count()
         self._zipfs = Manager().list()
@@ -83,11 +92,10 @@ class zipf_from_dir(zipf_from_file):
         self._statistic.set_phase("Converting files to zipfs")
         for p in processes:
             p.join()
-
-        self._statistic.set_phase("Merging zipfs")
         zipfs = self._zipfs
         with Pool(self._processes_number) as p:
             while len(zipfs)>=2:
+                self._statistic.set_phase("Merging %s zipfs"%len(zipfs))
                 zipfs = list(p.imap(zipf_from_dir._merge, list(chunks(zipfs, 2))))
 
         self._statistic.set_phase("Normalizing zipfs")
