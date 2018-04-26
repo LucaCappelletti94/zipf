@@ -180,6 +180,22 @@ class zipf:
         """
         return (self._emiJSD(other) + other._emiJSD(self))/2
 
+    def normalized_jensen_shannon(self, other):
+        total = 0
+        delta = 0
+        other_data = other._data
+        for key, value in self._data.items():
+            ov = other_data.get(key)
+            if ov:
+                denominator = (ov + value)/2
+                total += value*math.log(value/denominator) + ov*math.log(ov/denominator)
+                delta -= ov
+            else:
+                delta += value
+
+        total += (1+delta)*math.log(2)
+        return total/2
+
     def kullback_leibler(self, other: 'zipf') -> float:
         """Determines the Kullback–Leibler divergence on the subset of both zipfs events, in log2.
 
