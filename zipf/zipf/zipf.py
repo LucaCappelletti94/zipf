@@ -3,6 +3,8 @@ from typing import Union
 from multiprocessing import Pool, cpu_count
 from collections import OrderedDict
 import math, numbers
+import matplotlib as mpl
+mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import json
 import numpy as np
