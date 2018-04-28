@@ -214,7 +214,7 @@ class zipf:
         return total
 
     def hellinger(self, other: 'zipf') -> float:
-        """Determines the hellinger distance on the subset of both zipfs events, in log2.
+        """Determines the hellinger distance on the subset of both zipfs events.
 
             Args:
                 other: the zipf to which determine the hellinger distance.
