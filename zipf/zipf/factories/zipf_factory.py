@@ -3,4 +3,4 @@ class zipf_factory:
         pass
 
     def run(self, _zipf):
-        return _zipf.sort().normalize()
+        return _zipf.sort()
