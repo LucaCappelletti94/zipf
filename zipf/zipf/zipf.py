@@ -67,7 +67,7 @@ class zipf:
         """Iterates over the zipf"""
         return iter(self._data)
 
-    def __getitem__(self, key: Union[str, numbers.Number]) -> float:
+    def __getitem__(self, key: Union[str, numbers.Number, slice]) -> float:
         """Retrieve an element from the zipf
 
         Args:
