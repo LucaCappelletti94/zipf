@@ -102,10 +102,14 @@ class zipf:
                 The multiplied zipf
 
         """
+        sd = self._data
         if self.is_number(value):
-            return zipf({k: self[k]*value for k in self})
+            return zipf({k: sd[k]*value for k in sd})
         elif isinstance(value, zipf):
-            return zipf({ k: self.get(k)*value.get(k) for k in set(self) | set(value) })
+            od = value._data
+            sget = sd.get
+            oget = od.get
+            return zipf({ k: sget(k)*oget(k) for k in set(sd) | set(od) })
         else:
             raise ValueError("Moltiplication is allowed only with numbers or zipf objects.")
 
