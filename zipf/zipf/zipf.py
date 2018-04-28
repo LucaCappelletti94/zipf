@@ -119,12 +119,14 @@ class zipf:
                 The divided zipf
 
         """
+        sd = self._data
         if self.is_number(value):
             if value==0:
                 raise ValueError("Division by zero.")
-            return zipf({k: self[k]/value for k in self})
+            return zipf({k: sd[k]/value for k in sd})
         elif isinstance(value, zipf):
-            return zipf({ k: self[k]/value[k] for k in set(self) & set(value) })
+            od = value._data
+            return zipf({ k: sd[k]/od[k] for k in set(sd) & set(od) })
         else:
             raise ValueError("Division is allowed only with numbers or zipf objects.")
 
@@ -141,7 +143,9 @@ class zipf:
 
         """
         if isinstance(other, zipf):
-            return zipf({ k: self[k] + other[k] for k in set(self) | set(other) })
+            sd = self._data
+            od = other._data
+            return zipf({ k: sd[k] + od[k] for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
     def __sub__(self, other: 'zipf') -> 'zipf':
