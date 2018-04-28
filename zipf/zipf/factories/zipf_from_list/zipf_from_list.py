@@ -24,8 +24,10 @@ class zipf_from_list(zipf_factory):
 
         zd = _zipf._data
 
+        get = zd.get
+
         for element in elements:
-            zd[element] = zd.get(element, 0) + unit
+            zd[element] = get(element, 0) + unit
 
         return _zipf
 
