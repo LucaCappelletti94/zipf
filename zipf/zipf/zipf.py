@@ -160,19 +160,11 @@ class zipf:
     def is_number(self, value):
         return isinstance(value, (int, float))
 
-    def _emiJSD(self, other: 'zipf') -> float:
-        total = 0
-        other_data = other._data
-        for key, value in self._data.items():
-            ov = other_data.get(key,0)
-            if ov:
-                total += value*math.log(2*value/(ov + value))
-            else:
-                total += value*0.6931471806
-        return total
+    def jensen_shannon(self, other):
+        """
+            Determines the Jensen–Shannon divergence on both zipfs events.
 
-    def jensen_shannon(self, other: 'zipf') -> float:
-        """Determines the Jensen–Shannon divergence on both zipfs events, in log2.
+            Both zipfs HAVE TO be normalized.
 
             Args:
                 other: the zipf to which determine the JS divergence.
@@ -180,26 +172,32 @@ class zipf:
             Returns:
                 A float number representing the JS divergence
         """
-        return (self._emiJSD(other) + other._emiJSD(self))/2
-
-    def normalized_jensen_shannon(self, other):
         total = 0
         delta = 0
-        other_data = other._data
-        for key, value in self._data.items():
-            ov = other_data.get(key)
+        if len(self) > len(other):
+            big_data = self._data
+            small_data = other._data
+        else:
+            big_data = other._data
+            small_data = self._data
+
+        big_get = big_data.get
+        log = math.log
+
+        for key, value in small_data.items():
+            ov = big_get(key)
             if ov:
                 denominator = (ov + value)/2
-                total += value*math.log(value/denominator) + ov*math.log(ov/denominator)
+                total += value*log(value/denominator) + ov*log(ov/denominator)
                 delta -= ov
             else:
                 delta += value
 
-        total += (1+delta)*math.log(2)
+        total += (1+delta)*log(2)
         return total/2
 
     def kullback_leibler(self, other: 'zipf') -> float:
-        """Determines the Kullback–Leibler divergence on the subset of both zipfs events, in log2.
+        """Determines the Kullback–Leibler divergence on the subset of both zipfs events.
 
             Args:
                 other: the zipf to which determine the KL divergence.
