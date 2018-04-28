@@ -292,6 +292,10 @@ class zipf:
         """Retrieves the zipf items"""
         return self._data.items()
 
+    def get(self, k):
+        """Retrieves the zipf items"""
+        return self._data.get(k, 0)
+
     def values(self):
         """Retrieves the zipf frequencies values"""
         return self._data.values()
