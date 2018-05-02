@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+import json
 class zipf_factory:
 
     _default_options = {
