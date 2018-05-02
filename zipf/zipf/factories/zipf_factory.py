@@ -1,3 +1,4 @@
+import os
 from collections import defaultdict
 class zipf_factory:
 
@@ -6,11 +7,11 @@ class zipf_factory:
         "minimum_count":0
     }
 
-    def __init__(self, custom_options = None):
+    def __init__(self, options = None):
         self._word_filter = None
         if custom_options == None:
             custom_options = {}
-        self._options = {**self._default_options, **custom_options}
+        self._options = {**self._default_options, **options}
 
         if self._options["remove_stop_words"]:
             self._load_stop_words()
