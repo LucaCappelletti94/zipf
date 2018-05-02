@@ -3,8 +3,8 @@ from ...factories import zipf_from_list
 import re
 
 class zipf_from_text(zipf_from_list):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, custom_options = None):
+        super().__init__(custom_options)
         self._words_regex = re.compile(r"\W+")
 
     def _extract_words(self, text):

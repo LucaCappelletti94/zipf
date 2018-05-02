@@ -2,20 +2,15 @@ from ...zipf import zipf
 from ..zipf_factory import zipf_factory
 
 class zipf_from_list(zipf_factory):
-    def __init__(self):
-        super().__init__()
-        self._word_filter = None
-
-    def set_word_filter(self, word_filter):
-        """Sets the function that filters words"""
-        self._word_filter = word_filter
+    def __init__(self, custom_options = None):
+        super().__init__(custom_options)
 
     def _create_zipf(self, elements, _zipf):
 
-        if self._word_filter:
-            elements = list(filter(self._word_filter, elements))
+        filtered_elements = self._filter(elements)
+        clean_elements = self._clean(filtered_elements)
 
-        elements_number = len(elements)
+        elements_number = len(clean_elements)
 
         if elements_number==0:
             return _zipf
@@ -26,7 +21,7 @@ class zipf_from_list(zipf_factory):
 
         get = zd.get
 
-        for element in elements:
+        for element in clean_elements:
             zd[element] = get(element, 0) + unit
 
         return _zipf
