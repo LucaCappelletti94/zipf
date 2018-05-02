@@ -9,8 +9,8 @@ class zipf_factory:
 
     def __init__(self, options = None):
         self._word_filter = None
-        if custom_options == None:
-            custom_options = {}
+        if options == None:
+            options = {}
         self._options = {**self._default_options, **options}
 
         if self._options["remove_stop_words"]:
