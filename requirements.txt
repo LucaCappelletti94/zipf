@@ -1,3 +1,0 @@
-zipf==latest
-requests
-matplotlib
