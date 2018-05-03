@@ -87,7 +87,7 @@ class zipf:
 
         """
 
-        if self.is_number(frequency):
+        if self._is_number(frequency):
             self._data[key] = frequency
         else:
             raise ValueError("A frequency must be a number.")
@@ -103,7 +103,7 @@ class zipf:
 
         """
         sd = self._data
-        if self.is_number(value):
+        if self._is_number(value):
             return zipf({k: sd[k]*value for k in sd})
         elif isinstance(value, zipf):
             od = value._data
@@ -124,7 +124,7 @@ class zipf:
 
         """
         sd = self._data
-        if self.is_number(value):
+        if self._is_number(value):
             if value==0:
                 raise ValueError("Division by zero.")
             return zipf({k: sd[k]/value for k in sd})
@@ -177,7 +177,7 @@ class zipf:
         """Overrides the default implementation"""
         return not self.__eq__(other)
 
-    def is_number(self, value):
+    def _is_number(self, value):
         return isinstance(value, (int, float))
 
     def jensen_shannon(self, other):
