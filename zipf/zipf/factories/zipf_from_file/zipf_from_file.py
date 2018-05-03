@@ -1,7 +1,7 @@
 from ...factories import zipf_from_text
 
 class zipf_from_file(zipf_from_text):
-    def __init__(self, options None):
+    def __init__(self, options = None):
         super().__init__(options)
         self._file_interface = lambda f: f.read()
 
