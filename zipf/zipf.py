@@ -167,6 +167,16 @@ class zipf:
             return zipf({ k: sd.get(k,0) - od.get(k,0) for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(self, other.__class__):
+            return self._data == other._data
+        return False
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        return not self.__eq__(other)
+
     def is_number(self, value):
         return isinstance(value, (int, float))
 
