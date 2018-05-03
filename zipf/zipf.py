@@ -170,12 +170,7 @@ class zipf:
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(self, other.__class__):
-            if len(self) != len(other):
-                return False
-            for a, b in zip(self.items(), other.items()):
-                if a != b:
-                    return False
-            return True
+            return self._data == other._data
         return False
 
     def __ne__(self, other):
