@@ -173,7 +173,7 @@ class zipf:
             return self._data == other._data
         return False
 
-    def __eq__(self, other):
+    def __ne__(self, other):
         """Overrides the default implementation"""
         return not self.__eq__(other)
 
