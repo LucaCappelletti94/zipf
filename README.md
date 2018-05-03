@@ -2,6 +2,8 @@
 
 [![Docs Status](https://readthedocs.org/projects/zipf/badge/)](https://readthedocs.org/projects/zipf/badge/)
 [![PyPI version](https://badge.fury.io/py/zipf.svg)](https://badge.fury.io/py/zipf)
+[![Build Status](https://travis-ci.org/https://travis-ci.com/LucaCappelletti94/zipf?branch=master)](https://travis-ci.com/LucaCappelletti94/zipf)
+
 
 ## What does it do?
 The zipf package was realized to simplify creations and operations with zipf distributions, like sum, subtraction, mutiplications, divisions, slicing, statical operations such as mean, variance and much more.
