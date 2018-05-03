@@ -41,12 +41,9 @@ class zipf_factory:
         if self._options["minimum_count"]:
             frequency = defaultdict(int)
             for element in elements:
-                for token in element:
-                    frequency[token] += 1
+                frequency[element] += 1
 
-
-            return [[token for token in element if frequency[token] > self._options["minimum_count"]]
-                     for element in elements]
+            return [element for element in elements if frequency[element] > self._options["minimum_count"]]
         return elements
 
     def _elements_filter(self, element):
