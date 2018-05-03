@@ -1,2 +1,3 @@
 zipf==latest
 requests
+matplotlib
