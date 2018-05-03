@@ -1,0 +1,1 @@
+from .zipf_from_text import zipf_from_text

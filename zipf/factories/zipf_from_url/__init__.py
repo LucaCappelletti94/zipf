@@ -1,0 +1,1 @@
+from .zipf_from_url import zipf_from_url
