@@ -2,7 +2,7 @@
 
 [![Docs Status](https://readthedocs.org/projects/zipf/badge/)](https://readthedocs.org/projects/zipf/badge/)
 [![PyPI version](https://badge.fury.io/py/zipf.svg)](https://badge.fury.io/py/zipf)
-[![Build Status](https://travis-ci.org/https://travis-ci.com/LucaCappelletti94/zipf?branch=master)](https://travis-ci.com/LucaCappelletti94/zipf)
+[![Build Status](https://travis-ci.com/LucaCappelletti94/zipf)](https://travis-ci.com/LucaCappelletti94/zipf)
 
 
 ## What does it do?
