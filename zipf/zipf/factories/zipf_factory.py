@@ -5,7 +5,8 @@ class zipf_factory:
 
     _default_options = {
         "remove_stop_words":False,
-        "minimum_count":0
+        "minimum_count":0,
+        "lower_case":False
     }
 
     def __init__(self, options = None):
@@ -46,11 +47,16 @@ class zipf_factory:
             return [element for element in elements if frequency[element] > self._options["minimum_count"]]
         return elements
 
+    def _lower_case(self, elements):
+        if self._options["lower_case"]:
+            return [element.lower() for element in elements]
+        return elements
+
     def _elements_filter(self, element):
         return self._stop_word_filter(element) and self._custom_word_filter(element)
 
     def _clean(self, elements):
-        return self._remove_low_count(elements)
+        return self._lower_case(self._remove_low_count(elements))
 
     def _filter(self, elements):
         return list(filter(self._elements_filter, elements))
