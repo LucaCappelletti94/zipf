@@ -178,7 +178,7 @@ class zipf:
         return not self.__eq__(other)
 
     def _is_number(self, value):
-        return isinstance(value, (int, float))
+        return not isinstance(value, bool) and isinstance(value, (int, float))
 
     def jensen_shannon(self, other):
         """
