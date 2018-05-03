@@ -2,8 +2,8 @@ from ...zipf import zipf
 from ..zipf_factory import zipf_factory
 
 class zipf_from_list(zipf_factory):
-    def __init__(self, custom_options = None):
-        super().__init__(custom_options)
+    def __init__(self, options None):
+        super().__init__(options)
 
     def _create_zipf(self, elements, _zipf):
 

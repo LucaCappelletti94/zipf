@@ -14,7 +14,7 @@ MyManager.register('statistic', statistic)
 
 class zipf_from_dir(zipf_from_file):
     def __init__(self, use_cli=False, custom_options= None):
-        super().__init__(custom_options)
+        super().__init__(options)
         self._use_cli = use_cli
 
     def _text_to_zipf(self, paths):

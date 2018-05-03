@@ -3,7 +3,7 @@ from ...factories import zipf_from_text
 
 class zipf_from_url(zipf_from_text):
     def __init__(self, custom_options=None):
-        super().__init__(custom_options)
+        super().__init__(options)
         self._request_interface = lambda r: r.text
 
     def set_interface(self, request_interface):
