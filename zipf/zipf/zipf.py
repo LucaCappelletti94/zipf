@@ -149,7 +149,7 @@ class zipf:
         if isinstance(other, zipf):
             sd = self._data
             od = other._data
-            return zipf({ k: sd[k] + od[k] for k in set(self) | set(other) })
+            return zipf({ k: sd.get(k,0) + od.get(k,0) for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
     def __sub__(self, other: 'zipf') -> 'zipf':
@@ -162,7 +162,9 @@ class zipf:
 
         """
         if isinstance(other, zipf):
-            return zipf({ k: self[k] - other[k] for k in set(self) | set(other) })
+            sd = self._data
+            od = other._data
+            return zipf({ k: sd.get(k,0) - od.get(k,0) for k in set(self) | set(other) })
         raise ValueError("Given argument is not a zipf object")
 
     def is_number(self, value):
