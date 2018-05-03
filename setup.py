@@ -4,7 +4,7 @@ from codecs import open
 from os import path
 import sys
 import os
-from zipf.__version__ import __version__
+from .zipf.__version__ import __version__
 
 here = path.abspath(path.dirname(__file__))
 
