@@ -5,7 +5,12 @@ class zipf_factory:
 
     _default_options = {
         "remove_stop_words":False,
-        "minimum_count":0
+        "minimum_count":0,
+        "chain_min_len":1,
+        "chain_max_len":1,
+        "chaining_character":" ",
+        "chain_after_filter":False,
+        "chain_after_clean":False
     }
 
     def __init__(self, options = None):
@@ -50,10 +55,31 @@ class zipf_factory:
         return self._stop_word_filter(element) and self._custom_word_filter(element)
 
     def _clean(self, elements):
-        return self._remove_low_count(elements)
+        cleaned_elements = self._remove_low_count(elements)
+        if self._options["chain_after_clean"]:
+            return self._chain(cleaned_elements)
+        return cleaned_elements
 
     def _filter(self, elements):
-        return list(filter(self._elements_filter, elements))
+        if not (self._options["chain_after_filter"] or self._options["chain_after_clean"]):
+            elements = self._chain(elements)
+        filtered_elements = list(filter(self._elements_filter, elements))
+        if self._options["chain_after_filter"]:
+            return self._chain(filtered_elements)
+        return filtered_elements
+
+    def _chain(self, elements):
+        if self._options["chain_min_len"] == self._options["chain_max_len"] == 1:
+            return elements
+        chained_elements = []
+        append = chained_elements.append
+        join = self._options["chaining_character"].join
+        _min = self._options["chain_min_len"]
+        _max = self._options["chain_max_len"]
+        for i in range(len(elements)):
+            for j in range(i+_min, i+_max+1):
+                append(join(elements[i:j]))
+        return chained_elements
 
     def run(self, _zipf):
         return _zipf.sort()
