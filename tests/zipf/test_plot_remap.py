@@ -1,3 +1,4 @@
+import pytest
 from zipf import zipf
 import matplotlib.pyplot
 
