@@ -1,10 +1,10 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_str():
-    z = zipf({"one":1, "two":1})
+    z = Zipf({"one":1, "two":1})
     assert (
         z,
-        zipf({"one":-1, "two":-1})
+        Zipf({"one":-1, "two":-1})
     ) == (
         -(-z),
         -z

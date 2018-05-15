@@ -1,5 +1,5 @@
-from zipf import zipf
+from zipf import Zipf
 from utils import fail_empty
 def test_empty_mean():
-    errors = fail_empty(zipf.mean)
+    errors = fail_empty(Zipf.mean)
     assert not errors, "errors occured:\n{}".format("\n".join(errors))

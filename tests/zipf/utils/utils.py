@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from zipf import zipf
+from zipf import Zipf
 
 def _tests_no_num():
     return ["this should fail", True, False, (-1+0j), [], {}, OrderedDict(), None]
@@ -8,7 +8,7 @@ def _tests_num():
     return [1, 1.0, -1, -1.0]
 
 def _fail_types(lamb, tests):
-    z = zipf()
+    z = Zipf()
     errors = []
     for test in tests:
         try:
@@ -27,8 +27,8 @@ def fail_types_no_num(lamb):
 def fail_empty(lamb):
     errors = []
     try:
-        lamb(zipf())
-        errors.append("Set has not raised exception with empty zipf")
+        lamb(Zipf())
+        errors.append("Set has not raised exception with empty Zipf")
     except ValueError as e:
         pass
     return errors

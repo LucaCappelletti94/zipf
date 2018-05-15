@@ -1,12 +1,12 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_check_empty():
-    z = zipf({"one":0.2, "two":0.25, "three":0.6})
+    z = Zipf({"one":0.2, "two":0.25, "three":0.6})
 
     raised = False
 
     try:
-        zipf().check_empty()
+        Zipf().check_empty()
     except ValueError as e:
         raised = True
 

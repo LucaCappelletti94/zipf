@@ -1,7 +1,7 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_getitem():
-    z = zipf({"g":1})
+    z = Zipf({"g":1})
     assert (
         z.__getitem__("g"),
         z.__getitem__("no_key"),

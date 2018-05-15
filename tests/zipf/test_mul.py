@@ -1,13 +1,13 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_mul():
-    z = zipf({"one":0.5, "two":0.5})
-    z2 = zipf({"one":1, "two":1})
-    z3 = zipf({"one":1})
+    z = Zipf({"one":0.5, "two":0.5})
+    z2 = Zipf({"one":1, "two":1})
+    z3 = Zipf({"one":1})
     assert (
-        zipf({"one":1, "two":1}),
+        Zipf({"one":1, "two":1}),
         z,
-        zipf({"one":0.5}),
+        Zipf({"one":0.5}),
     ) == (
         z*2,
         z*z2,

@@ -1,15 +1,15 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_str():
-    z = zipf({"g":1})
+    z = Zipf({"g":1})
     assert (
         str(z),
-        str(zipf()),
+        str(Zipf()),
         str(z),
-        str(zipf())
+        str(Zipf())
     ) == (
         '{\n  "g": 1\n}',
         '{}',
         repr(z),
-        repr(zipf())
+        repr(Zipf())
     )

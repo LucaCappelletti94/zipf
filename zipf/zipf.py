@@ -8,17 +8,17 @@ import json
 from numpy import mean, median, var
 from .utils import is_number
 
-class zipf(OrderedDict):
-    """The zipf class represents a zipf distribution and offers various tools to edit it easily"""
+class Zipf(OrderedDict):
+    """The Zipf class represents a Zipf distribution and offers various tools to edit it easily"""
 
     def __str__(self) -> str:
-        """Prints a json dictionary representing the zipf"""
+        """Prints a json dictionary representing the Zipf"""
         return json.dumps(self, indent=2)
 
     __repr__ = __str__
 
     def __missing__(self, key):
-        """The default value of an event in the zipf is 0"""
+        """The default value of an event in the Zipf is 0"""
         OrderedDict.__setitem__(self, key, 0)
         return 0
 
@@ -29,10 +29,10 @@ class zipf(OrderedDict):
             return self.__missing__(key)
 
     def __setitem__(self, key: Union[str, float, int], frequency:float):
-        """Sets an element of the zipf to the given frequency
+        """Sets an element of the Zipf to the given frequency
 
         Args:
-            key: an hash representing an element in the zipf
+            key: an hash representing an element in the Zipf
             frequency: a float number representing the frequency
 
         """
@@ -42,70 +42,70 @@ class zipf(OrderedDict):
         else:
             raise ValueError("A frequency must be a number.")
 
-    def __mul__(self, value: Union['zipf', float, int]) -> 'zipf':
-        """Multiplies each value of the zipf by either a numeric value or the corrisponding word frequency in the other zipf.
+    def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
+        """Multiplies each value of the Zipf by either a numeric value or the corrisponding word frequency in the other Zipf.
 
             Args:
-                value: either a zipf or a number to be multiplies with the zipf.
+                value: either a Zipf or a number to be multiplies with the Zipf.
 
             Returns:
-                The multiplied zipf
+                The multiplied Zipf
 
         """
         if is_number(value):
-            return zipf({k: v*value for k, v in self.items()})
-        elif isinstance(value, zipf):
+            return Zipf({k: v*value for k, v in self.items()})
+        elif isinstance(value, Zipf):
             oget = value.get
-            result = zipf()
+            result = Zipf()
             for k,v in self.items():
                 other_value = oget(k)
                 if other_value:
                     result[k] = other_value*v
             return result
         else:
-            raise ValueError("Moltiplication is allowed only with numbers or zipf objects.")
+            raise ValueError("Moltiplication is allowed only with numbers or Zipf objects.")
 
     __rmul__ = __mul__
 
-    def __truediv__(self, value: Union['zipf', float, int]) -> 'zipf':
-        """Divides each value of the zipf by either a numeric value or the corrisponding word frequency in the other zipf.
+    def __truediv__(self, value: Union['Zipf', float, int]) -> 'Zipf':
+        """Divides each value of the Zipf by either a numeric value or the corrisponding word frequency in the other Zipf.
 
             Args:
-                value: either a zipf or a number to divide the zipf.
+                value: either a Zipf or a number to divide the Zipf.
 
             Returns:
-                The divided zipf
+                The divided Zipf
 
         """
         if is_number(value):
             if value==0:
                 raise ValueError("Division by zero.")
-            return zipf({k: v/value for k, v in self.items()})
-        elif isinstance(value, zipf):
+            return Zipf({k: v/value for k, v in self.items()})
+        elif isinstance(value, Zipf):
             oget = value.get
-            result = zipf()
+            result = Zipf()
             for k,v in self.items():
                 other_value = oget(k)
                 if other_value:
                     result[k] = v/other_value
             return result
         else:
-            raise ValueError("Division is allowed only with numbers or zipf objects.")
+            raise ValueError("Division is allowed only with numbers or Zipf objects.")
 
     def __neg__(self):
-        return zipf({k:-v for k,v in self.items()})
+        return Zipf({k:-v for k,v in self.items()})
 
-    def __add__(self, other: 'zipf') -> 'zipf':
-        """Sums two zipf
+    def __add__(self, other: 'Zipf') -> 'Zipf':
+        """Sums two Zipf
             Args:
-                other: a given zipf to be summed
+                other: a given Zipf to be summed
 
             Returns:
-                The summed zipfs
+                The summed Zipfs
 
         """
-        if isinstance(other, zipf):
-            result = zipf()
+        if isinstance(other, Zipf):
+            result = Zipf()
             for k,v in self.items():
                 result[k] = v
             for k,v in other.items():
@@ -114,19 +114,19 @@ class zipf(OrderedDict):
                 else:
                     result[k] += v
             return result
-        raise ValueError("Given argument is not a zipf object")
+        raise ValueError("Given argument is not a Zipf object")
 
-    def __sub__(self, other: 'zipf') -> 'zipf':
-        """Subtracts two zipf
+    def __sub__(self, other: 'Zipf') -> 'Zipf':
+        """Subtracts two Zipf
             Args:
-                other: a given zipf to be subtracted
+                other: a given Zipf to be subtracted
 
             Returns:
-                The subtracted zipfs
+                The subtracted Zipfs
 
         """
-        if isinstance(other, zipf):
-            result = zipf()
+        if isinstance(other, Zipf):
+            result = Zipf()
             for k,v in self.items():
                 result[k] = v
             for k,v in other.items():
@@ -135,51 +135,51 @@ class zipf(OrderedDict):
                 else:
                     result[k] -= v
             return result
-        raise ValueError("Given argument is not a zipf object")
+        raise ValueError("Given argument is not a Zipf object")
 
-    def remap(self, remapper:'zipf')->'zipf':
-        """Returns a remapped zipf to the order of the other zipf, deleting elements when not present in both.
+    def remap(self, remapper:'Zipf')->'Zipf':
+        """Returns a remapped Zipf to the order of the other Zipf, deleting elements when not present in both.
 
             Args:
-                remapper: a zipf that is used to remap the current zipf
+                remapper: a Zipf that is used to remap the current Zipf
 
             Returns:
-                the remapped zipf
+                the remapped Zipf
 
         """
-        remapped = zipf()
+        remapped = Zipf()
         for key, value in remapper.items():
             if key in self:
                 remapped[key] = self[key]
         return remapped
 
-    def normalize(self)->'zipf':
-        """Normalizes the zipf so that the sum is equal to one
+    def normalize(self)->'Zipf':
+        """Normalizes the Zipf so that the sum is equal to one
 
             Returns:
-                the normalized zipf
+                the normalized Zipf
         """
         self.check_empty()
         total = sum(list(self.values()))
         if total!=1:
             return self/total
-        return zipf(self)
+        return Zipf(self)
 
-    def cut(self, _min=0, _max=1)->'zipf':
-        """Returns a zipf without elements below _min or above _max"""
-        result = zipf()
+    def cut(self, _min=0, _max=1)->'Zipf':
+        """Returns a Zipf without elements below _min or above _max"""
+        result = Zipf()
         for k,v in self.items():
             if v > _min and v <= _max:
                 result[k] = v
         return result
 
     def min(self) -> float:
-        """Returns the value with minimal frequency in the zipf"""
+        """Returns the value with minimal frequency in the Zipf"""
         self.check_empty()
         return min(self, key=self.get)
 
     def max(self) -> float:
-        """Returns the value with maximal frequency in the zipf"""
+        """Returns the value with maximal frequency in the Zipf"""
         self.check_empty()
         return max(self, key=self.get)
 
@@ -200,26 +200,26 @@ class zipf(OrderedDict):
 
     def check_empty(self):
         if len(self) == 0:
-            raise ValueError("The zipf is empty!")
+            raise ValueError("The Zipf is empty!")
 
-    def sort(self)->'zipf':
-        """Returns the sorted zipf, based on the frequency value"""
-        return zipf(sorted(self.items(), key=lambda t: t[1], reverse=True))
+    def sort(self)->'Zipf':
+        """Returns the sorted Zipf, based on the frequency value"""
+        return Zipf(sorted(self.items(), key=lambda t: t[1], reverse=True))
 
-    def load(path: str) -> 'zipf':
-        """Loads a zipf from the given path.
+    def load(path: str) -> 'Zipf':
+        """Loads a Zipf from the given path.
 
         Args:
-            path: The path where the zipf is stored.
+            path: The path where the Zipf is stored.
 
         Returns:
-            The loaded zipf
+            The loaded Zipf
         """
         with open(path, "r") as f:
-            return zipf(json.load(f))
+            return Zipf(json.load(f))
 
     def save(self, path: str):
-        """Saves the zipf as a dictionary to a given json file
+        """Saves the Zipf as a dictionary to a given json file
 
         Args:
             path: the path to the json file to write
@@ -229,7 +229,7 @@ class zipf(OrderedDict):
             json.dump(self, f)
 
     def plot(self,  plot_style = 'o', show = True):
-        """Plots the zipf"""
+        """Plots the Zipf"""
         y = [t[1] for t in self.items()]
 
         matplotlib.pyplot.figure(figsize=(20,10))
@@ -238,12 +238,11 @@ class zipf(OrderedDict):
             matplotlib.pyplot.show()
 
     def plot_remap(self, remapper, plot_style = 'o', show = True):
-        """Plots a zipf remapped over another zipf"""
+        """Plots a Zipf remapped over another Zipf"""
         x1 = []
         y1 = []
         y2 = []
         sget = self.get
-        rget = remapper.get
         x1append = x1.append
         y1append = y1.append
         y2append = y2.append

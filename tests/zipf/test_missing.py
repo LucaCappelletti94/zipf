@@ -1,5 +1,5 @@
-from zipf import zipf
+from zipf import Zipf
 
 def test_missing():
-    z = zipf()
+    z = Zipf()
     assert z.__missing__("my_missing_key") == 0
