@@ -1,9 +1,9 @@
 import os
 from zipf import zipf
 
-def test_answer():
+def test_save_and_load():
     path = "save_and_load_test.json"
-    z1 = zipf({"a":1})
+    z1 = zipf({"one":0.2, "two":0.25, "three":0.6})
     z1.save(path)
     z2 = zipf.load(path)
     os.remove(path)
