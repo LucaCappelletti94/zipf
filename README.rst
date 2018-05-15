@@ -66,7 +66,7 @@ Here's a couple of examples:
 
 Zipf from a list
 -------------------------
-    .. code:: python
+.. code:: python
 
     from zipf.factories import zipf_from_list
 
@@ -85,7 +85,7 @@ Zipf from a list
       "2": 0.11111111111111108,
       "3": 0.11111111111111108
     }
-'''
+    '''
 
 
 Zipf from a text
