@@ -66,7 +66,7 @@ Here's a couple of examples:
 
 Zipf from a list
 -------------------------
-    .. code:: python
+.. code:: python
 
     from zipf.factories import zipf_from_list
 
@@ -85,7 +85,7 @@ Zipf from a list
       "2": 0.11111111111111108,
       "3": 0.11111111111111108
     }
-'''
+    '''
 
 
 Zipf from a text
@@ -205,8 +205,8 @@ This library is released under MIT license.
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/zipf.png
    :target: https://travis-ci.org/LucaCappelletti94/zipf
 
-.. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/distances/badge.svg?branch=master
-    :target: https://coveralls.io/github/LucaCappelletti94/distances
+.. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/zipf/badge.svg?branch=master
+    :target: https://coveralls.io/github/LucaCappelletti94/zipf
 
 .. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=zipf.lucacappelletti&metric=alert_status
     :target: https://sonarcloud.io/dashboard/index/zipf.lucacappelletti
