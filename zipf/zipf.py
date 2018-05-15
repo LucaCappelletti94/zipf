@@ -159,6 +159,7 @@ class zipf(OrderedDict):
             Returns:
                 the normalized zipf
         """
+        self.check_empty()
         total = sum(list(self.values()))
         if total!=1:
             return self/total
