@@ -206,7 +206,7 @@ This library is released under MIT license.
    :target: https://travis-ci.org/LucaCappelletti94/zipf
 
 .. |coveralls| image:: https://coveralls.io/repos/github/LucaCappelletti94/zipf/badge.svg?branch=master
-    :target: https://coveralls.io/github/LucaCappelletti94/distances
+    :target: https://coveralls.io/github/LucaCappelletti94/zipf
 
 .. |sonar_quality| image:: https://sonarcloud.io/api/project_badges/measure?project=zipf.lucacappelletti&metric=alert_status
     :target: https://sonarcloud.io/dashboard/index/zipf.lucacappelletti
