@@ -1,12 +1,23 @@
+dist: trusty
+sudo: false
+addons:
+  sonarcloud:
+    organization: "lucacappelletti94-github"
+    token:
+      secure: "G/GItRw7r2EwGV8Gi4mxdHG6WbidwIb6N7UxLWsvU3WonZYYCn9faVPi8q3GqteFbJqrok6udg77Nxo6mNB+f6sWzjE5vFtrz1nccQIlmOgx9bnxhGVwyZWcLTPBUaRUhqEnYrx30qmz3bgEsICReAeFY4bDKEcLfSQWX+3cTU2pxz2qHrgWJ7eNDyRm8cfmKiYbtGI55dru86ToVKtFpz6+0lqXihfLqIEZjd6FvnHzX7aW82myG/x8WDGTkyriELRMPFLsgCQGhIL4yIjaN7lUYgcl9SUGEzVNDaCnAHUIMACiQfBm2Px28v6Ejsl+jCg78XdXSr4+/jujfhE3iFnGMt2IJMZq46DAa8lPsBKw6I7VbyeYCIqoV8/LdQolFOkYT0+NgQzToIZJrrUOYjyH21WN4Ww5IWPQn54VnK6hdBfz6suPkkfiWmuIjIeNzkbixoU9enkuloR77L6g+hjviZnnmJa9AZNiaQv9isqVIEASzSaly4Vy492ihq1bX9/Z7IjYUtEw2qtw407JdvM7cLKEJatCF6VQJlog6Q/xiVDmyx56YWj74riPinAbPdO6e3ZWKBFTrOtf88BJ55Xfd92/RxZUxFBAjgkWevSL300nFzCv0kER/kSthhw26s7GQyX0YtUVjrO63OAJTKVfxiQXyC/IpJqVeV2xDG0="
 language: python
 python:
-  - "3.6"
-cache: pip
+- '3.6'
+jdk:
+- oraclejdk8
+cache:
+  directories:
+  - "$HOME/.sonar/cache"
 install:
-  - pip install codecov pytest pytest-cov
-  - pip install .
+- pip install -r test_requirements.txt
+- pip install .
 script:
-  - pytest --cov=./
-
+- pytest --cov=./zipf --cov-report xml:coverage.xml
+- sonar-scanner
 after_success:
-  - codecov
+- coveralls

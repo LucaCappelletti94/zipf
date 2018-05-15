@@ -55,7 +55,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 3 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Information Technology',
@@ -76,7 +76,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['requests', 'matplotlib']
+    install_requires=['requests', 'matplotlib', 'dictances']
 )
 
 def status(s):
