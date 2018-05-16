@@ -2,7 +2,7 @@ import requests
 from ...factories import ZipfFromText
 
 class ZipfFromUrl(ZipfFromText):
-    def __init__(self, custom_options=None):
+    def __init__(self, options=None):
         super().__init__(options)
         self._request_interface = lambda r: r.text
 
