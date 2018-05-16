@@ -1,8 +1,8 @@
-from ...zipf import zipf
-from ...factories import zipf_from_list
+from ...zipf import Zipf
+from ...factories import Zipf_from_list
 import re
 
-class zipf_from_text(zipf_from_list):
+class Zipf_from_text(Zipf_from_list):
     def __init__(self, options = None):
         super().__init__(options)
         self._words_regex = re.compile(r"\W+")

@@ -1,11 +1,11 @@
-from ...zipf import zipf
-from ..zipf_factory import zipf_factory
+from ...zipf import Zipf
+from ..zipf_factory import Zipf_factory
 
-class zipf_from_list(zipf_factory):
+class Zipf_from_list(Zipf_factory):
     def __init__(self, options = None):
         super().__init__(options)
 
-    def _create_zipf(self, elements, _zipf):
+    def _create_zipf(self, elements, zipf):
 
         filtered_elements = self._filter(elements)
         clean_elements = self._clean(filtered_elements)
@@ -13,22 +13,20 @@ class zipf_from_list(zipf_factory):
         elements_number = len(clean_elements)
 
         if elements_number==0:
-            return _zipf
+            return zipf
 
         unit = 1/elements_number
 
-        zd = _zipf._data
+        zget = zipf.get
+        zset = zipf.__setitem__
 
-        get = zd.get
+        [zset(element, zget(element, 0) + unit) for element in elements]
 
-        for element in clean_elements:
-            zd[element] = get(element, 0) + unit
-
-        return _zipf
+        return zipf
 
     def run(self, elements):
         """Extract a zipf distribution from the given text"""
-        return super().run(self._create_zipf(elements, zipf()))
+        return super().run(self._create_zipf(elements, Zipf()))
 
-    def enrich(self, elements, _zipf):
-        return self._create_zipf(elements, _zipf)
+    def enrich(self, elements, zipf):
+        return self._create_zipf(elements, zipf)

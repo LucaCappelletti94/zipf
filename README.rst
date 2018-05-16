@@ -36,7 +36,7 @@ Here's some examples on how to use the divergence beetween zipf distributions:
 
 .. code:: python
 
-    from zipf import zipf
+    from zipf import Zipf
 
     my_first_zipf=zipf.load("my_first_zipf.json")
     my_second_zipf=zipf.load("my_second_zipf.json")
@@ -68,7 +68,7 @@ Zipf from a list
 -------------------------
 .. code:: python
 
-    from zipf.factories import zipf_from_list
+    from zipf.factories import Zipf_from_list
 
     my_factory = zipf_from_list()
     my_zipf = my_factory.run(["one", "one", "two", "my", "oh", "my", 1, 2, 3])
@@ -92,7 +92,7 @@ Zipf from a text
 -------------------------
 .. code:: python
 
-    from zipf.factories import zipf_from_text
+    from zipf.factories import Zipf_from_text
 
     my_factory = zipf_from_text()
     my_factory.set_word_filter(lambda w: len(w)>3)
@@ -121,7 +121,7 @@ Zipf from a text file
 -------------------------
 .. code:: python
 
-    from zipf.factories import zipf_from_file
+    from zipf.factories import Zipf_from_file
 
     my_factory = zipf_from_file()
     my_factory.set_word_filter(lambda w: w!="brown")
@@ -147,7 +147,7 @@ Zipf from webpage
 -------------------------
 .. code:: python
 
-    from zipf.factories import zipf_from_url
+    from zipf.factories import Zipf_from_url
     import json
 
     my_factory = zipf_from_url()
@@ -169,7 +169,7 @@ Zipf from directory
 -------------------------
 .. code:: python
 
-    from zipf.factories import zipf_from_dir
+    from zipf.factories import Zipf_from_dir
     import json
 
     my_factory = zipf_from_dir()

@@ -1,8 +1,8 @@
 from multiprocessing import Manager, Pool, Process, cpu_count
 from ...mp.managers import MyManager
 from ...utils import chunks
-from ...zipf import zipf
-from ...factories import zipf_from_file
+from ...zipf import Zipf
+from ...factories import Zipf_from_file
 from .statistic_from_dir import statistic_from_dir as statistic
 from .cli_from_dir import cli_from_dir as cli
 
@@ -12,7 +12,7 @@ import re
 
 MyManager.register('statistic', statistic)
 
-class zipf_from_dir(zipf_from_file):
+class Zipf_from_dir(Zipf_from_file):
     def __init__(self, use_cli=False, custom_options= None):
         super().__init__(options)
         self._use_cli = use_cli

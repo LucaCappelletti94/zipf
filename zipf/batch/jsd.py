@@ -2,7 +2,7 @@ from multiprocessing import Process, cpu_count, Manager, Lock
 
 from ..mp import MyManager
 from ..utils import chunks
-from ..factories import zipf_from_file
+from ..factories import Zipf_from_file
 from ..zipf import zipf
 
 from .batch_statistic import batch_statistic as statistic

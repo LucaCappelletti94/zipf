@@ -1,1 +1,1 @@
-from .zipf_from_text import zipf_from_text
+from .zipf_from_text import Zipf_from_text
