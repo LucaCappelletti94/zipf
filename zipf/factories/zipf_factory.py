@@ -3,7 +3,7 @@ from collections import defaultdict
 import json
 from abc import ABC
 
-class Zipf_factory(ABC):
+class ZipfFactory(ABC):
 
     _default_options = {
         "remove_stop_words":False,
