@@ -15,6 +15,11 @@ def factory_break_options(Factory):
     non_booleans = [1,0,None,[],{},"test",10,15,-16]
     non_naturals = [True, False, -1, -10, "test", 0.5, 0.75, None, [],{}]
     non_characters = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
+
+    booleans = [True, False]
+    non_zero_naturals = [1,2,3,4,5,6,7,8,9,10]
+    characters = ['', ' ', '1', '-', '\n']
+
     wrong_options = []
     for key in ["remove_stop_words", "chain_after_filter", "chain_after_clean"]:
         wrong_option = {}
@@ -39,13 +44,49 @@ def factory_break_options(Factory):
         "chain_max_len":1
     })
 
+    right_options = []
+    for key in ["remove_stop_words", "chain_after_filter", "chain_after_clean"]:
+        right_option = {}
+        for boolean in booleans:
+            right_option[key] = boolean
+        right_options.append(right_option)
+
+    for key in ["minimum_count"]:
+        right_option = {}
+        for non_zero_natural in non_zero_naturals:
+            right_option[key] = non_zero_natural
+        right_options.append(right_option)
+
+    for i in non_zero_naturals:
+        right_option = {}
+        right_option["chain_min_len"] = i
+        for j in non_zero_naturals:
+            right_option["chain_max_len"] = i+j
+            right_options.append(right_option)
+
+    right_options.append({
+        "minimum_count":0
+    })
+
+    for key in ["chaining_character"]:
+        right_option = {}
+        for character in characters:
+            right_option[key] = character
+        right_options.append(right_option)
+
     errors = []
     for wrong_option in wrong_options:
         try:
             Factory(wrong_option)
-            errors.append("Factory %s did not fail with options %s."%(Factory.__name__, wrong_options))
+            errors.append("Factory %s did not fail with options %s."%(Factory.__name__, wrong_option))
         except ValueError as e:
             pass
+
+    for right_option in right_options:
+        try:
+            Factory(right_option)
+        except ValueError as e:
+            errors.append("Factory %s failed with options %s."%(Factory.__name__, right_option))
     return errors
 
 def factory_fails(Factory, path):
