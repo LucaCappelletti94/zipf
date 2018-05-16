@@ -4,7 +4,7 @@ from ...utils import chunks
 from ...zipf import Zipf
 from ...factories import ZipfFromFile
 from .statistic_from_dir import statistic_from_dir as statistic
-from .cli_from_dir import cli_from_dir as cli
+from .cli_from_dir import CliFromDir as cli
 
 import glob
 import math
