@@ -26,6 +26,13 @@ class ZipfFactory(ABC):
         if self._options["remove_stop_words"]:
             self._load_stop_words()
 
+    def __str__(self) -> str:
+        """Prints a json dictionary representing the Zipf"""
+        return json.dumps(self._options, indent=2)
+
+    __repr__ = __str__
+
+
     def validate_options(self):
         # Validating options types
         for option in self._default_options:
