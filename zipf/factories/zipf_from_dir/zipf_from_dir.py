@@ -79,10 +79,10 @@ class ZipfFromDir(ZipfFromFile):
 
         self._statistic.set_phase("Loading file paths")
         processes = []
-        chunks = self._load_paths()
-        if chunks == None:
+        chk = self._load_paths()
+        if chk == None:
             return Zipf()
-        for i, ch in enumerate(chunks):
+        for i, ch in enumerate(chk):
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
@@ -96,7 +96,7 @@ class ZipfFromDir(ZipfFromFile):
         with Pool(min(self._processes_number, n)) as p:
             while len(zipfs)>=2:
                 self._statistic.set_phase("Merging %s zipfs"%len(zipfs))
-                zipfs = list(p.imap(zipf_from_dir._merge, list(chunks(zipfs, 2))))
+                zipfs = list(p.imap(ZipfFromDir._merge, list(chunks(zipfs, 2))))
 
         self._statistic.set_phase("Normalizing zipfs")
 

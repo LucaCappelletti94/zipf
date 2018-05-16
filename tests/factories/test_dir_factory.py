@@ -11,7 +11,21 @@ def prepare_with_cli(options):
     factory.set_interface(lambda f: f.read())
     return factory
 
+def cli_with_no_interface(options):
+    factory = ZipfFromDir(options, use_cli=True)
+    return factory
+
+def run(factory, data):
+    return factory.run(data, ["txt"])
+
+def enrich(factory, data, zipf):
+    return factory.enrich(data, zipf, ["txt"])
+
 def test_dir_factory():
-    errors = factory_fails(ZipfFromDir, "dir", prepare)
-    errors += factory_fails(ZipfFromDir, "dir", prepare_with_cli)
+    errors = []
+    for d in ["dir", "multi_dir"]:
+        for pr in [None, prepare, prepare_with_cli, cli_with_no_interface]:
+            for r in [None, run]:
+                for e in [None, enrich]:
+                    errors += factory_fails(ZipfFromDir, d, prepare=pr, run=r, enrich=e)
     assert not errors, "errors occured:\n{}".format("\n".join(errors))

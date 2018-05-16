@@ -89,9 +89,13 @@ def factory_break_options(Factory):
             errors.append("Factory %s failed with options %s."%(Factory.__name__, right_option))
     return errors
 
-def factory_fails(Factory, path, prepare=None):
+def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
     if prepare == None:
         prepare = Factory
+    if run == None:
+        run = lambda factory, data: factory.run(data)
+    if enrich == None:
+        enrich = lambda factory, data, zipf: factory.enrich(data, zipf)
     current_path = os.path.dirname(__file__)
     errors = factory_break_options(Factory)
     for test in ["default", "empty"]:
@@ -111,10 +115,10 @@ def factory_fails(Factory, path, prepare=None):
         result = Zipf.load(result_path)
         factory = prepare(_get_options_for(test))
 
-        factory_run = factory.run(data)
+        factory_run = run(factory, data)
         if result != factory_run:
             errors.append("%s has not expected result on run test '%s': %s != %s"%(Factory.__name__, test, result, factory_run))
-        factory_enrich = factory.enrich(data, Zipf()).sort()
+        factory_enrich = enrich(factory, data, Zipf()).sort()
         if result != factory_enrich:
             errors.append("%s has not expected result on enrich test '%s': %s != %s"%(Factory.__name__, test, result, factory_enrich))
     return errors
