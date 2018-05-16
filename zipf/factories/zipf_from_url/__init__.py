@@ -1,1 +1,1 @@
-from .zipf_from_url import Zipf_from_url
+from .zipf_from_url import ZipfFromUrl

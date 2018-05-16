@@ -1,6 +1,6 @@
-from ...factories import Zipf_from_text
+from ...factories import ZipfFromText
 
-class Zipf_from_file(Zipf_from_text):
+class ZipfFromFile(ZipfFromText):
     def __init__(self, options = None):
         super().__init__(options)
         self._file_interface = lambda f: f.read()

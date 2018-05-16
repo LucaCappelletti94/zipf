@@ -1,7 +1,7 @@
 from ...zipf import Zipf
 from ..zipf_factory import Zipf_factory
 
-class Zipf_from_list(Zipf_factory):
+class ZipfFromList(Zipf_factory):
     def __init__(self, options = None):
         super().__init__(options)
 

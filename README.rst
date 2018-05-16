@@ -68,7 +68,7 @@ Zipf from a list
 -------------------------
 .. code:: python
 
-    from zipf.factories import Zipf_from_list
+    from zipf.factories import ZipfFromList
 
     my_factory = zipf_from_list()
     my_zipf = my_factory.run(["one", "one", "two", "my", "oh", "my", 1, 2, 3])
@@ -92,7 +92,7 @@ Zipf from a text
 -------------------------
 .. code:: python
 
-    from zipf.factories import Zipf_from_text
+    from zipf.factories import ZipfFromText
 
     my_factory = zipf_from_text()
     my_factory.set_word_filter(lambda w: len(w)>3)
@@ -121,9 +121,9 @@ Zipf from a text file
 -------------------------
 .. code:: python
 
-    from zipf.factories import Zipf_from_file
+    from zipf.factories import ZipfFromFile
 
-    my_factory = zipf_from_file()
+    my_factory = ZipfFromFile()
     my_factory.set_word_filter(lambda w: w!="brown")
     my_zipf = my_factory.run()
 
@@ -147,7 +147,7 @@ Zipf from webpage
 -------------------------
 .. code:: python
 
-    from zipf.factories import Zipf_from_url
+    from zipf.factories import ZipfFromUrl
     import json
 
     my_factory = zipf_from_url()
@@ -169,10 +169,10 @@ Zipf from directory
 -------------------------
 .. code:: python
 
-    from zipf.factories import Zipf_from_dir
+    from zipf.factories import ZipfFromDir
     import json
 
-    my_factory = zipf_from_dir()
+    my_factory = ZipfFromDir()
     my_factory.set_word_filter(lambda w: len(w)>4)
     my_zipf = my_factory.run("path/to/my/directory", ["txt"])
 

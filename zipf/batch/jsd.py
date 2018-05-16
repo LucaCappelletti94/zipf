@@ -2,7 +2,7 @@ from multiprocessing import Process, cpu_count, Manager, Lock
 
 from ..mp import MyManager
 from ..utils import chunks
-from ..factories import Zipf_from_file
+from ..factories import ZipfFromFile
 from ..zipf import zipf
 
 from .batch_statistic import batch_statistic as statistic
@@ -35,7 +35,7 @@ class jsd:
         if self._use_cli:
             self._cli = cli(self._statistic)
 
-        self._factory = zipf_from_file()
+        self._factory = ZipfFromFile()
 
     def set_interface(self, file_interface):
         self._factory.set_interface(file_interface)

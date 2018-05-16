@@ -1,1 +1,1 @@
-from .zipf_from_dir import Zipf_from_dir
+from .zipf_from_dir import ZipfFromDir
