@@ -21,6 +21,8 @@ class Zipf_factory(ABC):
             options = {}
         self._options = {**self._default_options, **options}
 
+        self.validate_options()
+
         if self._options["remove_stop_words"]:
             self._load_stop_words()
 

@@ -54,17 +54,13 @@ class ZipfFromDir(ZipfFromFile):
         self._statistic.set_total_files(files_number)
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
-    def run(self, path = None, extensions = None, paths=None):
-        if path:
-            if paths:
-                paths.append(path)
-            else:
-                paths = [path]
-            self._paths = paths
-        elif paths:
+    def run(self, paths = None, extensions = None):
+        if isinstance(paths, basestring):
+            self._paths = [paths]
+        elif isinstance(paths, list):
             self._paths = paths
         else:
-            raise ValueError("No valid paths were given")
+            raise ValueError("No paths were given.")
 
         self._myManager = MyManager()
         self._myManager.start()
