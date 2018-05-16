@@ -9,11 +9,48 @@ def _get_options_for(test_name):
     global _options_for_tests
     if test_name in _options_for_tests:
         return _options_for_tests[test_name]
-    return {}
+    return None
+
+def factory_break_options(Factory):
+    non_booleans = [1,0,None,[],{},"test",10,15,-16]
+    non_naturals = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
+    non_characters = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
+    wrong_options = []
+    for key in ["remove_stop_words", "chain_after_filter", "chain_after_clean"]:
+        wrong_option = {}
+        for non_boolean in non_booleans:
+            wrong_option[key] = non_boolean
+        wrong_options.append(wrong_option)
+
+    for key in ["minimum_count", "chain_min_len", "chain_max_len"]:
+        wrong_option = {}
+        for non_natural in non_naturals:
+            wrong_option[key] = non_natural
+        wrong_options.append(wrong_option)
+
+    for key in ["chaining_character"]:
+        wrong_option = {}
+        for non_character in non_characters:
+            wrong_option[key] = non_character
+        wrong_options.append(wrong_option)
+
+    wrong_options.append({
+        "chain_min_len":10,
+        "chain_max_len":1
+    })
+
+    errors = []
+    for wrong_option in wrong_options:
+        try:
+            Factory(wrong_option)
+            errors.append("Factory %s did not fail with options %s."%(Factory.__name__, wrong_options))
+        except ValueError as e:
+            pass
+    return errors
 
 def factory_fails(Factory, path):
     current_path = os.path.dirname(__file__)
-    errors = []
+    errors = factory_break_options(Factory)
     for test in ["default", "empty"]:
         data_path_json = os.path.join(current_path, "%s/%s.json"%(path, test))
         data_path_text = os.path.join(current_path, "%s/%s.txt"%(path, test))
