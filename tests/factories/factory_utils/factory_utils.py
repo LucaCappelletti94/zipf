@@ -89,7 +89,9 @@ def factory_break_options(Factory):
             errors.append("Factory %s failed with options %s."%(Factory.__name__, right_option))
     return errors
 
-def factory_fails(Factory, path):
+def factory_fails(Factory, path, prepare=None):
+    if prepare == None:
+        prepare = Factory
     current_path = os.path.dirname(__file__)
     errors = factory_break_options(Factory)
     for test in ["default", "empty"]:
@@ -107,7 +109,7 @@ def factory_fails(Factory, path):
         if not os.path.isfile(result_path):
             pytest.skip("While testing %s, result for testing '%s' was not found in %s."%(Factory.__name__, test, result_path))
         result = Zipf.load(result_path)
-        factory = Factory(_get_options_for(test))
+        factory = prepare(_get_options_for(test))
 
         factory_run = factory.run(data)
         if result != factory_run:
