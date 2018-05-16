@@ -1,9 +1,8 @@
 import time
-from .derivative import derivative
 from multiprocessing import Lock
 from datetime import datetime, timedelta
 
-class statistic:
+class Statistic:
     def __init__(self):
         self._running_processes = {}
         self._phase = ""

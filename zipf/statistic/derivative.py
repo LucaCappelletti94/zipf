@@ -1,6 +1,6 @@
 import time
 
-class derivative:
+class Derivative:
 
     def __init__(self, degree, resolution=1000):
         self._degree = degree
@@ -10,7 +10,7 @@ class derivative:
         self._resolution = resolution
         self._derivatives = []
         if self._degree > 1:
-            self._sub_derivative = derivative(self._degree-1)
+            self._sub_derivative = Derivative(self._degree-1)
 
     def step(self, value):
         if self._first:

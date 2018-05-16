@@ -3,7 +3,7 @@ import curses
 from multiprocessing import Process
 import time
 
-class cli(ABC):
+class Cli(ABC):
     def __init__(self, statistics):
         self._statistics = statistics
         self._i=0

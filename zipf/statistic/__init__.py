@@ -1,2 +1,2 @@
-from .derivative import derivative
-from .statistic import statistic
+from .derivative import Derivative
+from .statistic import Statistic

@@ -3,14 +3,13 @@ from ...mp.managers import MyManager
 from ...utils import chunks
 from ...zipf import Zipf
 from ...factories import ZipfFromFile
-from .statistic_from_dir import statistic_from_dir as statistic
+from .statistic_from_dir import StatisticFromDir as statistic
 from .cli_from_dir import CliFromDir as cli
 
 import glob
 import math
 import json
 import re
-
 
 MyManager.register('statistic', statistic)
 

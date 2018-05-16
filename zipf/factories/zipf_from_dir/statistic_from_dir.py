@@ -1,7 +1,7 @@
-from ...statistic import statistic, derivative
+from ...statistic import Statistic, Derivative
 import time
 
-class statistic_from_dir(statistic):
+class StatisticFromDir(Statistic):
     def __init__(self):
         super().__init__()
         self._zipfs = 0
@@ -10,7 +10,7 @@ class statistic_from_dir(statistic):
         self._empty_wordlists = 0
         self._estimate_update_timeout = 1
         self._last_estimate_update = 0
-        self._elaboration_speed = derivative(1, resolution=100)
+        self._elaboration_speed = Derivative(1, resolution=100)
         self._loader_done = False
 
     def set_loader_done(self):

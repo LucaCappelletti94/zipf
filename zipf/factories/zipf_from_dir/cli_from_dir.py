@@ -1,6 +1,6 @@
-from ...cli import cli
+from ...cli import Cli
 
-class CliFromDir(cli):
+class CliFromDir(Cli):
     def _update(self):
         self._statistics.step_speeds()
 
