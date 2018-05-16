@@ -29,9 +29,8 @@ class Zipf_factory(ABC):
         for option in self._default_options:
             if type(self._default_options[option]) is not type(self._options[option]):
                 raise ValueError("The given option %s has value %s, type %s expected."%(option, self._options[option], type(self._default_options[option])))
-            if type(self._options[option]) is int:
-                if self._options[option]<0:
-                    raise ValueError("The given option %s has value %s, negative numbers are not allowed."%(option, self._options[option]))
+            if type(self._options[option]) is int and self._options[option]<0:
+                raise ValueError("The given option %s has value %s, negative numbers are not allowed."%(option, self._options[option]))
         if self._options["chain_min_len"] > self._options["chain_max_len"]:
             raise ValueError("The option 'chain_min_len: %s' must be lower or equal to 'chain_max_len: %s'"%(self._options["chain_min_len"], self._options["chain_max_len"]))
 
