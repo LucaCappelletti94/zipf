@@ -31,7 +31,9 @@ class ZipfFromDir(ZipfFromFile):
         self._statistic.set_dead_process("text to zipf converter")
 
     def _merge(zipfs):
-        return zipfs[0] + zipfs[1]
+        if len(zipfs)==2:
+            return zipfs[0] + zipfs[1]
+        return zipfs[0]
 
     def _load_paths(self):
         files_list = []
