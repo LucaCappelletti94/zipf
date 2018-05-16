@@ -13,7 +13,7 @@ def _get_options_for(test_name):
 
 def factory_break_options(Factory):
     non_booleans = [1,0,None,[],{},"test",10,15,-16]
-    non_naturals = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
+    non_naturals = [True, False, -1, -10, "test", 0.5, 0.75, None, [],{}]
     non_characters = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
     wrong_options = []
     for key in ["remove_stop_words", "chain_after_filter", "chain_after_clean"]:
