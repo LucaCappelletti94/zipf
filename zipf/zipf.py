@@ -198,8 +198,11 @@ class Zipf(OrderedDict):
         self.check_empty()
         return round(var(list(self.values())),14)
 
+    def is_empty(self):
+        return len(self) == 0
+
     def check_empty(self):
-        if len(self) == 0:
+        if self.is_empty():
             raise ValueError("The Zipf is empty!")
 
     def sort(self)->'Zipf':

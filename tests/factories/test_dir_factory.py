@@ -1,6 +1,6 @@
-from zipf.factories import ZipfFromUrl
+from zipf.factories import ZipfFromDir
 from factory_utils import factory_fails
 
-def test_url_factory():
-    errors = factory_fails(ZipfFromUrl, "url")
+def test_dir_factory():
+    errors = factory_fails(ZipfFromDir, "dir")
     assert not errors, "errors occured:\n{}".format("\n".join(errors))

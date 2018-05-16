@@ -8,26 +8,24 @@ from .cli_from_dir import cli_from_dir as cli
 
 import glob
 import math
+import json
 import re
+
 
 MyManager.register('statistic', statistic)
 
 class ZipfFromDir(ZipfFromFile):
-    def __init__(self, use_cli=False, custom_options= None):
+    def __init__(self, options= None, use_cli=False):
         super().__init__(options)
         self._use_cli = use_cli
 
     def _text_to_zipf(self, paths):
-        z = zipf()
+        z = Zipf()
         n = 0
         self._statistic.set_live_process("text to zipf converter")
         for path in paths:
-            try:
-                z = self.enrich(path, z)
-                n+=1
-            except ValueError as e:
-                pass
-
+            z = super().enrich(path, z)
+            n+=1
             self._statistic.add_zipf()
         self._zipfs.append(z/n)
         self._statistic.set_dead_process("text to zipf converter")
@@ -41,21 +39,21 @@ class ZipfFromDir(ZipfFromFile):
         for path in self._paths:
             if len(self._extensions):
                 for extension in self._extensions:
-                    paths.append(path+"/**/*.%s"%extension)
+                    paths.append(path+"/*.%s"%extension)
             else:
-                paths.append(path+"/**/*.*")
+                paths.append(path+"/*.*")
 
         for path in paths:
-            files_list += glob.iglob(path)
+            files_list += glob.glob(path)
 
         files_number = len(files_list)
-        if not files_number:
-            raise ValueError("The given path does not contain files")
+        if files_number == 0:
+            return None
         self._statistic.set_total_files(files_number)
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
-    def run(self, paths = None, extensions = None):
-        if isinstance(paths, basestring):
+    def run(self, paths, extensions = None):
+        if isinstance(paths, str):
             self._paths = [paths]
         elif isinstance(paths, list):
             self._paths = paths
@@ -81,7 +79,10 @@ class ZipfFromDir(ZipfFromFile):
 
         self._statistic.set_phase("Loading file paths")
         processes = []
-        for i, ch in enumerate(self._load_paths()):
+        chunks = self._load_paths()
+        if chunks == None:
+            return Zipf()
+        for i, ch in enumerate(chunks):
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
@@ -89,14 +90,17 @@ class ZipfFromDir(ZipfFromFile):
         for p in processes:
             p.join()
         zipfs = self._zipfs
-        with Pool(self._processes_number) as p:
+        n = len(zipfs)
+
+
+        with Pool(min(self._processes_number, n)) as p:
             while len(zipfs)>=2:
                 self._statistic.set_phase("Merging %s zipfs"%len(zipfs))
                 zipfs = list(p.imap(zipf_from_dir._merge, list(chunks(zipfs, 2))))
 
         self._statistic.set_phase("Normalizing zipfs")
 
-        final_zipf = (zipfs[0]/self._processes_number).sort()
+        final_zipf = (zipfs[0]/n).sort()
 
         self._statistic.done()
 
@@ -104,3 +108,6 @@ class ZipfFromDir(ZipfFromFile):
             self._cli.join()
 
         return final_zipf
+
+    def enrich(self, paths, zipf, extensions = None):
+        return zipf+self.run(paths, extensions)

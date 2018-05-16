@@ -31,8 +31,10 @@ def factory_fails(Factory, path):
         result = Zipf.load(result_path)
         factory = Factory(_get_options_for(test))
 
-        if result != factory.run(data):
-            errors.append("%s has not expected result on run test '%s'"%(Factory.__name__, test))
-        if result != factory.enrich(data, Zipf()).sort():
-            errors.append("%s has not expected result on enrich test '%s'"%(Factory.__name__, test))
+        factory_run = factory.run(data)
+        if result != factory_run:
+            errors.append("%s has not expected result on run test '%s': %s != %s"%(Factory.__name__, test, result, factory_run))
+        factory_enrich = factory.enrich(data, Zipf()).sort()
+        if result != factory_enrich:
+            errors.append("%s has not expected result on enrich test '%s': %s != %s"%(Factory.__name__, test, result, factory_enrich))
     return errors

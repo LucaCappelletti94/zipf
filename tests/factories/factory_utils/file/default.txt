@@ -1,1 +1,1 @@
-tests/factories/factory_utils/text/default.txt
+tests/factories/factory_utils/dir/default/default.txt

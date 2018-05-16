@@ -17,6 +17,6 @@ class ZipfFromFile(ZipfFromText):
         """Loads and extracts a zipf from the given file"""
         return super().run(self._load_file(path))
 
-    def enrich(self, path, _zipf):
+    def enrich(self, path, zipf):
         """Loads and enriches a given zipf from the given file"""
-        return super().enrich(self._load_file(path), _zipf)
+        return super().enrich(self._load_file(path), zipf)
