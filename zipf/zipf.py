@@ -49,17 +49,17 @@ class Zipf(OrderedDict):
         if is_number(value):
             return Zipf({k: v*value for k, v in self.items()})
 
-        if isinstance(value, Zipf):
-            oget = value.get
-            result = Zipf()
-            for k, v in self.items():
-                other_value = oget(k)
-                if other_value:
-                    result[k] = other_value*v
-            return result
+        if not isinstance(value, Zipf):
+            raise ValueError(
+                "Moltiplication is allowed only with numbers or Zipf objects.")
 
-        raise ValueError(
-            "Moltiplication is allowed only with numbers or Zipf objects.")
+        oget = value.get
+        result = Zipf()
+        for k, v in self.items():
+            other_value = oget(k)
+            if other_value:
+                result[k] = other_value*v
+        return result
 
     __rmul__ = __mul__
 
@@ -73,22 +73,23 @@ class Zipf(OrderedDict):
                 The divided Zipf
 
         """
+        if value == 0:
+            raise ValueError("Division by zero.")
+
         if is_number(value):
-            if value == 0:
-                raise ValueError("Division by zero.")
             return Zipf({k: v/value for k, v in self.items()})
 
-        if isinstance(value, Zipf):
-            oget = value.get
-            result = Zipf()
-            for k, v in self.items():
-                other_value = oget(k)
-                if other_value:
-                    result[k] = v/other_value
-            return result
+        if not isinstance(value, Zipf):
+            raise ValueError(
+                "Division is allowed only with numbers or Zipf objects.")
 
-        raise ValueError(
-            "Division is allowed only with numbers or Zipf objects.")
+        oget = value.get
+        result = Zipf()
+        for k, v in self.items():
+            other_value = oget(k)
+            if other_value:
+                result[k] = v/other_value
+        return result
 
     def __neg__(self):
         return Zipf({k: -v for k, v in self.items()})
