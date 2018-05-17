@@ -32,8 +32,8 @@ class Zipf(OrderedDict):
 
         if is_number(frequency):
             return OrderedDict.__setitem__(self, key, frequency)
-        else:
-            raise ValueError("A frequency must be a number.")
+
+        raise ValueError("A frequency must be a number.")
 
     def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
         """Multiplies each value of the Zipf by either a numeric value or the corrisponding word frequency in the other Zipf.
@@ -47,7 +47,8 @@ class Zipf(OrderedDict):
         """
         if is_number(value):
             return Zipf({k: v*value for k, v in self.items()})
-        elif isinstance(value, Zipf):
+
+        if isinstance(value, Zipf):
             oget = value.get
             result = Zipf()
             for k,v in self.items():
@@ -55,8 +56,8 @@ class Zipf(OrderedDict):
                 if other_value:
                     result[k] = other_value*v
             return result
-        else:
-            raise ValueError("Moltiplication is allowed only with numbers or Zipf objects.")
+
+        raise ValueError("Moltiplication is allowed only with numbers or Zipf objects.")
 
     __rmul__ = __mul__
 
@@ -74,7 +75,8 @@ class Zipf(OrderedDict):
             if value==0:
                 raise ValueError("Division by zero.")
             return Zipf({k: v/value for k, v in self.items()})
-        elif isinstance(value, Zipf):
+
+        if isinstance(value, Zipf):
             oget = value.get
             result = Zipf()
             for k,v in self.items():
@@ -82,8 +84,8 @@ class Zipf(OrderedDict):
                 if other_value:
                     result[k] = v/other_value
             return result
-        else:
-            raise ValueError("Division is allowed only with numbers or Zipf objects.")
+
+        raise ValueError("Division is allowed only with numbers or Zipf objects.")
 
     def __neg__(self):
         return Zipf({k:-v for k,v in self.items()})
