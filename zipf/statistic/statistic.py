@@ -29,6 +29,11 @@ class Statistic:
         })
         self._lock.release()
 
+    def _lock_sum(self, attribute, value):
+        self._lock.acquire()
+        attribute+=value
+        self._lock.release()
+
     def set_live_process(self, name):
         self._edit_dict(self._running_processes, name, 1)
 

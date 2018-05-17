@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import curses
 from multiprocessing import Process
-import time
+from time import sleep
 
 class Cli(ABC):
     def __init__(self, statistics):
@@ -17,19 +17,14 @@ class Cli(ABC):
         curses.cbreak()
         try:
             while True:
-                time.sleep(0.1)
+                sleep(0.1)
                 if self._statistics.is_done():
                     break
                 self._clear()
 
                 self._update()
 
-                processes = self._statistics.get_running_processes().items()
-
-                if len(processes)>0:
-                    self._print_frame()
-                    for name, number in processes:
-                        self._print_label("Process %s"%name, number)
+                self._print_processes()
 
                 self._print_all()
 
@@ -45,6 +40,14 @@ class Cli(ABC):
     @abstractmethod
     def _update(self):
         pass
+
+    def _print_processes(self):
+        processes = self._statistics.get_running_processes().items()
+
+        if len(processes)>0:
+            self._print_frame()
+            for name, number in processes:
+                self._print_label("Process %s"%name, number)
 
     def _print_speed(self, label, value, first_unit="it", second_unit = "s"):
         if value != 0:

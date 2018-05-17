@@ -5,9 +5,9 @@ from ...zipf import Zipf
 from ...factories import ZipfFromFile
 from .statistic_from_dir import StatisticFromDir as statistic
 from .cli_from_dir import CliFromDir as cli
+from math import ceil
 
 import glob
-import math
 import json
 import re
 
@@ -57,18 +57,15 @@ class ZipfFromDir(ZipfFromFile):
         for path in self._validate_base_paths(base_paths):
             if has_extensions:
                 for extension in self._extensions:
-                    paths.append(path+"/*.%s"%extension)
+                    files_list += glob.glob(path+"/*.%s"%extension)
             else:
-                paths.append(path+"/*.*")
-
-        for path in paths:
-            files_list += glob.glob(path)
+                files_list += glob.glob(path+"/*.*")
 
         files_number = len(files_list)
         if files_number == 0:
             return None
         self._statistic.set_total_files(files_number)
-        return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
+        return chunks(files_list, ceil(files_number/self._processes_number))
 
     def _render_zipfs(self, paths_chunk_generator):
         self._statistic.set_phase("Loading file paths")
