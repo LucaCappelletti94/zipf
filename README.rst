@@ -95,6 +95,42 @@ Zipf from a text
     }
     '''
 
+Zipf from a k-sequence
+-------------------------
+.. code:: python
+
+    from zipf.factories import ZipfFromKSequence
+
+    sequence_fraction_len = 5
+    my_factory = ZipfFromKSequence(sequence_fraction_len)
+    my_zipf = my_factory.run("ACTGGAAATGATGGDTGATDGATGAGTDGATGGGGGAAAGDTGATDGATDGATGDTGGGGADDDGATAGDTAGTDGAGAGAGDTGATDGAAAGDTG")
+
+    print(my_zipf)
+
+    '''
+    {
+      "TGGGG": 0.1,
+      "ACTGG": 0.05,
+      "AAATG": 0.05,
+      "ATGGD": 0.05,
+      "TGATD": 0.05,
+      "GATGA": 0.05,
+      "GTDGA": 0.05,
+      "GAAAG": 0.05,
+      "DTGAT": 0.05,
+      "DGATD": 0.05,
+      "GATGD": 0.05,
+      "ADDDG": 0.05,
+      "ATAGD": 0.05,
+      "TAGTD": 0.05,
+      "GAGAG": 0.05,
+      "AGDTG": 0.05,
+      "ATDGA": 0.05,
+      "AAGDT": 0.05,
+      "G": 0.05
+    }
+    '''
+
 
 Zipf from a text file
 -------------------------

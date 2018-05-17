@@ -3,26 +3,26 @@ from factory_utils import factory_fails
 
 
 def prepare(options):
-    factory = ZipfFromDir(options)
+    factory = ZipfFromDir(options=options)
     factory.set_interface(lambda f: f.read())
     return factory
 
 
 def prepare_with_word_filter(options):
-    factory = ZipfFromDir(options)
+    factory = ZipfFromDir(options=options)
     factory.set_interface(lambda f: f.read())
     factory.set_word_filter(lambda w: True)
     return factory
 
 
 def prepare_with_cli(options):
-    factory = ZipfFromDir(options, use_cli=True)
+    factory = ZipfFromDir(options=options, use_cli=True)
     factory.set_interface(lambda f: f.read())
     return factory
 
 
 def cli_with_no_interface(options):
-    factory = ZipfFromDir(options, use_cli=True)
+    factory = ZipfFromDir(options=options, use_cli=True)
     return factory
 
 
