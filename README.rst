@@ -2,7 +2,7 @@
 ZIPF
 ====
 
-|travis| |coveralls| |sonar_quality| |sonar_maintainability| |code_climate_maintainability| |code_climate_test_coverage| |pip|
+|travis| |coveralls| |sonar_quality| |sonar_maintainability| |code_climate_maintainability| |pip|
 
 --------------------------------------
 What does it do?
@@ -220,9 +220,5 @@ This library is released under MIT license.
 .. |code_climate_maintainability| image:: https://api.codeclimate.com/v1/badges/c758496736a2c9cecbff/maintainability
    :target: https://codeclimate.com/github/LucaCappelletti94/zipf/maintainability
    :alt: Maintainability
-
-.. |code_climate_test_coverage| image:: https://api.codeclimate.com/v1/badges/c758496736a2c9cecbff/test_coverage
-   :target: https://codeclimate.com/github/LucaCappelletti94/zipf/test_coverage
-   :alt: Test Coverage
 
 
