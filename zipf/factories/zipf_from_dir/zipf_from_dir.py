@@ -7,7 +7,7 @@ from .statistic_from_dir import StatisticFromDir as statistic
 from .cli_from_dir import CliFromDir as cli
 from math import ceil
 
-import glob
+from glob import glob
 import json
 import re
 
@@ -49,18 +49,13 @@ class ZipfFromDir(ZipfFromFile):
         if extensions:
             self._extensions = extensions
         else:
-            self._extensions = []
+            self._extensions = ["*"]
 
     def _load_paths(self, base_paths):
         files_list = []
-        paths = []
-        has_extensions = len(self._extensions) > 0
         for path in self._validate_base_paths(base_paths):
-            if has_extensions:
-                for extension in self._extensions:
-                    files_list += glob.glob(path+"/*.%s" % extension)
-            else:
-                files_list += glob.glob(path+"/*.*")
+            for extension in self._extensions:
+                files_list += glob(path+"/*.%s" % extension)
 
         files_number = len(files_list)
         if files_number == 0:
