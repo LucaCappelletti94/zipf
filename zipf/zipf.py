@@ -16,14 +16,10 @@ class Zipf(OrderedDict):
 
     def __missing__(self, key):
         """The default value of an event in the Zipf is 0"""
-        OrderedDict.__setitem__(self, key, 0)
         return 0
 
     def __getitem__(self, key):
-        try:
-            return OrderedDict.__getitem__(self, key)
-        except KeyError:
-            return self.__missing__(key)
+        return OrderedDict.__getitem__(self, key)
 
     def __setitem__(self, key: Union[str, float, int], frequency:float):
         """Sets an element of the Zipf to the given frequency
