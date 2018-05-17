@@ -1,9 +1,6 @@
 from __future__ import division
 from typing import Union
 from collections import OrderedDict
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot
 import json
 from numpy import mean, median, var
 from .utils import is_number
@@ -233,37 +230,4 @@ class Zipf(OrderedDict):
         """
         with open(path, "w") as f:
             json.dump(self, f)
-
-    # def plot(self,  plot_style = 'o', show = True):
-    #     """Plots the Zipf"""
-    #     y = [t[1] for t in self.items()]
-
-    #     matplotlib.pyplot.figure(figsize=(20,10))
-    #     matplotlib.pyplot.plot(range(len(self)), y, plot_style, markersize=1)
-    #     if show:
-    #         matplotlib.pyplot.show()
-
-    # def plot_remap(self, remapper, plot_style = 'o', show = True):
-    #     """Plots a Zipf remapped over another Zipf"""
-    #     x1 = []
-    #     y1 = []
-    #     y2 = []
-    #     sget = self.get
-    #     x1append = x1.append
-    #     y1append = y1.append
-    #     y2append = y2.append
-    #     i = 0
-    #     for key, value in remapper.items():
-    #         v = sget(key)
-    #         if v:
-    #             x1append(i)
-    #             y1append(v)
-    #         y2append(value)
-    #         i+=1
-
-    #     matplotlib.pyplot.figure(figsize=(20,10))
-    #     matplotlib.pyplot.plot(range(len(remapper)), y2, '-', markersize=1)
-    #     matplotlib.pyplot.plot(x1, y1, plot_style, markersize=3)
-    #     if show:
-    #         matplotlib.pyplot.show()
 
