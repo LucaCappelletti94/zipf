@@ -24,4 +24,4 @@ after_success:
 
 notifications:
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
-  mail: false
+  email: false
