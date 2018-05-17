@@ -17,6 +17,9 @@ class ZipfFromDir(ZipfFromFile):
     def __init__(self, options= None, use_cli=False):
         super().__init__(options)
         self._use_cli = use_cli
+        self._myManager = MyManager()
+        self._myManager.start()
+        self._processes_number = cpu_count()
 
     def _text_to_zipf(self, paths):
         z = Zipf()
@@ -34,11 +37,25 @@ class ZipfFromDir(ZipfFromFile):
             return zipfs[0] + zipfs[1]
         return zipfs[0]
 
-    def _load_paths(self):
+    def _validate_base_paths(self, base_paths):
+        if isinstance(base_paths, str):
+            return [base_paths]
+        if isinstance(base_paths, list):
+            return base_paths
+        raise ValueError("No paths were given.")
+
+    def _prepare_extensions(self, extensions):
+        if extensions:
+            self._extensions = extensions
+        else:
+            self._extensions = []
+
+    def _load_paths(self, base_paths):
         files_list = []
         paths = []
-        for path in self._paths:
-            if len(self._extensions):
+        has_extensions = len(self._extensions)>0
+        for path in self._validate_base_paths(base_paths):
+            if has_extensions:
                 for extension in self._extensions:
                     paths.append(path+"/*.%s"%extension)
             else:
@@ -53,62 +70,54 @@ class ZipfFromDir(ZipfFromFile):
         self._statistic.set_total_files(files_number)
         return chunks(files_list, math.ceil(len(files_list)/self._processes_number))
 
-    def run(self, paths, extensions = None):
-        if isinstance(paths, str):
-            self._paths = [paths]
-        elif isinstance(paths, list):
-            self._paths = paths
-        else:
-            raise ValueError("No paths were given.")
-
-        self._myManager = MyManager()
-        self._myManager.start()
-        self._statistic = self._myManager.statistic()
-
-        if self._use_cli:
-            self._cli = cli(self._statistic)
-
-        self._extensions = []
-        if extensions:
-            self._extensions = extensions
-
-        self._processes_number = cpu_count()
-        self._zipfs = Manager().list()
-
-        if self._use_cli:
-            self._cli.run()
-
+    def _render_zipfs(self, paths_chunk_generator):
         self._statistic.set_phase("Loading file paths")
+        self._zipfs = Manager().list()
         processes = []
-        chk = self._load_paths()
-        if chk == None:
-            return Zipf()
-        for i, ch in enumerate(chk):
+        for i, ch in enumerate(paths_chunk_generator):
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
         self._statistic.set_phase("Converting files to zipfs")
         for p in processes:
             p.join()
-        zipfs = self._zipfs
-        n = len(zipfs)
+        return self._zipfs
 
-
-        with Pool(min(self._processes_number, n)) as p:
+    def _merge_zipfs(self, zipfs):
+        with Pool(min(self._processes_number, len(zipfs))) as p:
             while len(zipfs)>=2:
                 self._statistic.set_phase("Merging %s zipfs"%len(zipfs))
                 zipfs = list(p.imap(ZipfFromDir._merge, list(chunks(zipfs, 2))))
+        return zipfs[0]
+
+    def run(self, paths, extensions = None):
+        self._statistic = self._myManager.statistic()
+        self._prepare_extensions(extensions)
+
+        if self._use_cli:
+            self._cli = cli(self._statistic)
+            self._cli.run()
+
+        paths_chunk_generator = self._load_paths(paths)
+        if paths_chunk_generator == None:
+            return Zipf()
+
+        zipfs = self._render_zipfs(paths_chunk_generator)
+
+        zipfs_number = len(zipfs)
+
+        zipf = self._merge_zipfs(zipfs)
 
         self._statistic.set_phase("Normalizing zipfs")
 
-        final_zipf = (zipfs[0]/n).sort()
+        normalized_zipf = (zipf/zipfs_number).sort()
 
         self._statistic.done()
 
         if self._use_cli:
             self._cli.join()
 
-        return final_zipf
+        return normalized_zipf
 
     def enrich(self, paths, zipf, extensions = None):
         return zipf+self.run(paths, extensions)
