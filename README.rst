@@ -7,7 +7,7 @@ ZIPF
 --------------------------------------
 What does it do?
 --------------------------------------
-The zipf package was realized to simplify creations and operations with zipf distributions, like sum, subtraction, mutiplications, divisions, slicing, statical operations such as mean, variance and much more.
+The zipf package was realized to simplify creations and operations with zipf distributions, like sum, subtraction, multiplications, divisions, statical operations such as mean, variance and much more.
 
 --------------------------------------
 How do I get it?
@@ -20,47 +20,26 @@ Just type into your terminal:
 
 
 --------------------------------------
-How much time does it take to process?
---------------------------------------
-Well, I created a zipf of about 1M text webpages and it took about 5 minutes. For 4k pages it takes about 1-2 seconds.
-
---------------------------------------
-How do I use it?
---------------------------------------
-The (work in progress at the current time) [documentation](http://zipf.readthedocs.io/en/latest/) is now available.
-
---------------------------------------
 Calculating distances and divergence
 --------------------------------------
-Here's some examples on how to use the divergence beetween zipf distributions:
+I wrote another package called `dictances`_ which calculates various distances and divergences between discrete distributions such as zipf. Here's an example:
 
 .. code:: python
 
     from zipf import Zipf
+    from dictances import *
 
-    my_first_zipf=zipf.load("my_first_zipf.json")
-    my_second_zipf=zipf.load("my_second_zipf.json")
+    a=zipf.load("my_first_zipf.json")
+    b=zipf.load("my_second_zipf.json")
 
-    print("Kullback-Leibler: %s"%my_first_zipf.kullback_leibler(my_second_zipf))
-    """Kullback-Leibler: 1.0505221625158134"""
-
-    print("Jensen-Shannon: %s"%my_first_zipf.jensen_shannon(my_second_zipf))
-    """Jensen-Shannon: 0.3322320406625018"""
-
-    print("Hellinger: %s"%my_first_zipf.hellinger(my_second_zipf))
-    """Hellinger: 0.5317798727121287"""
-
-    print("Total Variation: %s"%my_first_zipf.total_variation(my_second_zipf))
-    """Total Variation: 1.2389058569153246"""
-
-    print("Bhattacharyya: %s"%my_first_zipf.bhattacharyya(my_second_zipf))
-    """Bhattacharyya: 0.5588102416138747"""
-
-    print("Mahalanobis: %s"%my_first_zipf.mahalanobis(my_second_zipf))
-    """Mahalanobis: 0.046677899925634724"""
+    euclidean(a,b)
+    chebyshev(a,b)
+    hamming(a,b)
+    kullback_leibler(a,b)
+    jensen_shannon(a,b)
 
 --------------------------------------
-Creting a zipf using a zipf_factory
+Creating a zipf using a zipf_factory
 --------------------------------------
 Here's a couple of examples:
 
@@ -70,7 +49,7 @@ Zipf from a list
 
     from zipf.factories import ZipfFromList
 
-    my_factory = zipf_from_list()
+    my_factory = ZipfFromList()
     my_zipf = my_factory.run(["one", "one", "two", "my", "oh", "my", 1, 2, 3])
 
     print(my_zipf)
@@ -94,7 +73,7 @@ Zipf from a text
 
     from zipf.factories import ZipfFromText
 
-    my_factory = zipf_from_text()
+    my_factory = ZipfFromText()
     my_factory.set_word_filter(lambda w: len(w)>3)
     my_zipf = my_factory.run("You've got to find what you love. And that is as true for your work as it is for your lovers … Keep looking. Don't settle.")
 
@@ -150,7 +129,7 @@ Zipf from webpage
     from zipf.factories import ZipfFromUrl
     import json
 
-    my_factory = zipf_from_url()
+    my_factory = ZipfFromUrl()
     my_factory.set_word_filter(lambda w: int(w)>100)
     my_factory.set_interface(lambda r: json.loads(r.text)["ip"])
     my_zipf = my_factory.run("https://api.ipify.org/?format=json")
@@ -172,7 +151,7 @@ Zipf from directory
     from zipf.factories import ZipfFromDir
     import json
 
-    my_factory = ZipfFromDir()
+    my_factory = ZipfFromDir(use_cli=True)
     my_factory.set_word_filter(lambda w: len(w)>4)
     my_zipf = my_factory.run("path/to/my/directory", ["txt"])
 
@@ -194,6 +173,29 @@ Zipf from directory
       "success": 0.06666666666666668,
       "rather": 0.06666666666666668,
       "value": 0.06666666666666668
+    }
+    '''
+
+--------------------------------------
+Options in creating a zipf
+--------------------------------------
+
+Some built in options are available, and you can read the options of any factory object by printing it:
+
+.. code:: python
+
+    from zipf.zipf.factories import ZipfFromList
+    print(ZipfFromList())
+
+    '''
+    {
+      "remove_stop_words": false, # Removes stop words (currently only Italian ones, I'll extend it in the future if needed)
+      "minimum_count": 0, # Removes words that appear less than 'minimum_count' times
+      "chain_min_len": 1, # Chains up words, starting by a minimum of 'chain_min_len'
+      "chain_max_len": 1, # and ending to a maximum of 'chain_max_len'
+      "chaining_character": " ", # The character to interpose between words
+      "chain_after_filter": false, # The chaining is done after filtering
+      "chain_after_clean": false # The chaining is done after cleaning
     }
     '''
 
@@ -221,4 +223,4 @@ This library is released under MIT license.
    :target: https://codeclimate.com/github/LucaCappelletti94/zipf/maintainability
    :alt: Maintainability
 
-
+.. _dictances: https://github.com/LucaCappelletti94/dictances

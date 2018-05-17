@@ -8,6 +8,13 @@ def prepare(options):
     return factory
 
 
+def prepare_with_word_filter(options):
+    factory = ZipfFromDir(options)
+    factory.set_interface(lambda f: f.read())
+    factory.set_word_filter(lambda w: True)
+    return factory
+
+
 def prepare_with_cli(options):
     factory = ZipfFromDir(options, use_cli=True)
     factory.set_interface(lambda f: f.read())
@@ -30,7 +37,7 @@ def enrich(factory, data, zipf):
 def test_dir_factory():
     errors = []
     for d in ["dir", "multi_dir", "multi_paths"]:
-        for pr in [None, prepare, prepare_with_cli, cli_with_no_interface]:
+        for pr in [None, prepare, prepare_with_word_filter, prepare_with_cli, cli_with_no_interface]:
             for r in [None, run]:
                 for e in [None, enrich]:
                     errors += factory_fails(ZipfFromDir,

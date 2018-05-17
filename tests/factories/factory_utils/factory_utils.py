@@ -4,21 +4,33 @@ import pytest
 from zipf import Zipf
 
 _options_for_tests = {
-    "stop_words":{
-        "remove_stop_words":True
+    "stop_words": {
+        "remove_stop_words": True
     },
-    "minimum_count":{
+    "minimum_count": {
         "minimum_count": 2
     },
-    "chain":{
+    "chain": {
         "chain_min_len": 1,
         "chain_max_len": 3
+    },
+    "chain_after_filter": {
+        "chain_after_filter": True
+    },
+    "chain_after_clean": {
+        "chain_after_clean": True
     }
 }
 
 _map_test_to_data = {
-    "empty":"empty"
+    "empty": "empty"
 }
+
+_map_test_to_result = {
+    "chain_after_filter": "default",
+    "chain_after_clean": "default"
+}
+
 
 def _get_options_for(test_name):
     global _options_for_tests
@@ -26,13 +38,14 @@ def _get_options_for(test_name):
         return _options_for_tests[test_name]
     return None
 
+
 def factory_break_options(Factory):
-    non_booleans = [1,0,None,[],{},"test"]
-    non_naturals = [True, False, -10, "test", 0.5, None, [],{}]
-    non_characters = [True, False, -10, 0.5, None, [],{}]
+    non_booleans = [1, 0, None, [], {}, "test"]
+    non_naturals = [True, False, -10, "test", 0.5, None, [], {}]
+    non_characters = [True, False, -10, 0.5, None, [], {}]
 
     booleans = [True, False]
-    non_zero_naturals = [1,3,8]
+    non_zero_naturals = [1, 3, 8]
     characters = ['']
 
     wrong_options = []
@@ -55,8 +68,8 @@ def factory_break_options(Factory):
         wrong_options.append(wrong_option)
 
     wrong_options.append({
-        "chain_min_len":10,
-        "chain_max_len":1
+        "chain_min_len": 10,
+        "chain_max_len": 1
     })
 
     right_options = []
@@ -80,7 +93,7 @@ def factory_break_options(Factory):
             right_options.append(right_option)
 
     right_options.append({
-        "minimum_count":0
+        "minimum_count": 0
     })
 
     for key in ["chaining_character"]:
@@ -93,7 +106,8 @@ def factory_break_options(Factory):
     for wrong_option in wrong_options:
         try:
             Factory(wrong_option)
-            errors.append("Factory %s did not fail with options %s."%(Factory.__name__, wrong_option))
+            errors.append("Factory %s did not fail with options %s." %
+                          (Factory.__name__, wrong_option))
         except ValueError as e:
             pass
 
@@ -101,27 +115,43 @@ def factory_break_options(Factory):
         try:
             Factory(right_option)
         except ValueError as e:
-            errors.append("Factory %s failed with options %s."%(Factory.__name__, right_option))
+            errors.append("Factory %s failed with options %s." %
+                          (Factory.__name__, right_option))
     return errors
+
 
 def map_test_to_data(test):
     global _map_test_to_data
     return _map_test_to_data.get(test, "default")
 
+
+def map_test_to_result(test):
+    global _map_test_to_result
+    return _map_test_to_result.get(test, test)
+
+
 def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
     if prepare == None:
         prepare = Factory
     if run == None:
-        run = lambda factory, data: factory.run(data)
+        def run(factory, data): return factory.run(data)
     if enrich == None:
-        enrich = lambda factory, data, zipf: factory.enrich(data, zipf)
+        def enrich(factory, data, zipf): return factory.enrich(data, zipf)
     current_path = os.path.dirname(__file__)
     errors = factory_break_options(Factory)
-    for test in ["default", "empty", "stop_words", "minimum_count", "chain"]:
+    if str(Factory()) != '{\n  "remove_stop_words": false,\n  "minimum_count": 0,\n  "chain_min_len": 1,\n  "chain_max_len": 1,\n  "chaining_character": " ",\n  "chain_after_filter": false,\n  "chain_after_clean": false\n}':
+        errors.append("Factory representation is not correct")
+    global _options_for_tests
+    tests = ["default", "empty"] + list(_options_for_tests.keys())
+    for test in tests:
         data_path_name = map_test_to_data(test)
-        data_path_json = os.path.join(current_path, "%s/%s.json"%(path, data_path_name))
-        data_path_text = os.path.join(current_path, "%s/%s.txt"%(path, data_path_name))
-        result_path = os.path.join(current_path, "expected_results/%s.json"%test)
+        data_path_json = os.path.join(
+            current_path, "%s/%s.json" % (path, data_path_name))
+        data_path_text = os.path.join(
+            current_path, "%s/%s.txt" % (path, data_path_name))
+        result_path_name = map_test_to_result(test)
+        result_path = os.path.join(
+            current_path, "expected_results/%s.json" % result_path_name)
         if os.path.isfile(data_path_json):
             with open(data_path_json, "r") as f:
                 data = json.load(f)
@@ -129,17 +159,21 @@ def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
             with open(data_path_text, "r") as f:
                 data = f.read()
         else:
-            pytest.skip("While testing %s, data for testing '%s' was not found in %s or %s."%(Factory.__name__, test, data_path_text, data_path_json))
+            pytest.skip("While testing %s, data for testing '%s' was not found in %s or %s." % (
+                Factory.__name__, test, data_path_text, data_path_json))
         if not os.path.isfile(result_path):
-            pytest.skip("While testing %s, result for testing '%s' was not found in %s."%(Factory.__name__, test, result_path))
+            pytest.skip("While testing %s, result for testing '%s' was not found in %s." % (
+                Factory.__name__, test, result_path))
         result = Zipf.load(result_path).round()
         factory = prepare(_get_options_for(test))
 
         factory_run = run(factory, data).round()
         if result != factory_run:
-            errors.append("%s has not expected result on run test '%s': %s != %s"%(Factory.__name__, test, result, factory_run))
+            errors.append("%s has not expected result on run test '%s': %s != %s" % (
+                Factory.__name__, test, result, factory_run))
         factory_enrich = enrich(factory, data, Zipf()).sort().round()
         if result != factory_enrich:
-            errors.append("%s has not expected result on enrich test '%s': %s != %s"%(Factory.__name__, test, result, factory_enrich))
+            errors.append("%s has not expected result on enrich test '%s': %s != %s" % (
+                Factory.__name__, test, result, factory_enrich))
 
     return errors
