@@ -1,2 +1,5 @@
 from multiprocessing.managers import BaseManager
-class MyManager(BaseManager): pass
+
+
+class MyManager(BaseManager):
+    pass

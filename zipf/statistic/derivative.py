@@ -1,5 +1,6 @@
 import time
 
+
 class Derivative:
 
     def __init__(self, degree, resolution=1000):
@@ -43,7 +44,8 @@ class Derivative:
         return sum(self._derivatives) / len(self._derivatives)
 
     def _update_derivative(self, value):
-        new_derivative = (value - self._old_value)/(time.time() - self._last_time)
+        new_derivative = (value - self._old_value) / \
+            (time.time() - self._last_time)
         self._derivatives.append(new_derivative)
         self._derivatives = self._derivatives[-self._resolution:]
         if self._degree > 1:

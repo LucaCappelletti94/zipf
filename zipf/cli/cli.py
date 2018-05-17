@@ -3,10 +3,11 @@ import curses
 from multiprocessing import Process
 from time import sleep
 
+
 class Cli(ABC):
     def __init__(self, statistics):
         self._statistics = statistics
-        self._i=0
+        self._i = 0
         self._max_len = 0
         self._outputs = {}
 
@@ -44,20 +45,21 @@ class Cli(ABC):
     def _print_processes(self):
         processes = self._statistics.get_running_processes().items()
 
-        if len(processes)>0:
+        if len(processes) > 0:
             self._print_frame()
             for name, number in processes:
-                self._print_label("Process %s"%name, number)
+                self._print_label("Process %s" % name, number)
 
-    def _print_speed(self, label, value, first_unit="it", second_unit = "s"):
+    def _print_speed(self, label, value, first_unit="it", second_unit="s"):
         if value != 0:
-            self._print_label("%s speed"%label, "%s %s/%s"%(round(value, 2),first_unit,second_unit))
+            self._print_label("%s speed" % label, "%s %s/%s" %
+                              (round(value, 2), first_unit, second_unit))
 
     def _print_fraction(self, label, v1, v2):
         if v2 != 0:
             perc = str(round(v1/v2*100, 1))+"%"
 
-            self._print_label(label, "%s/%s %s"%(
+            self._print_label(label, "%s/%s %s" % (
                 v1,
                 v2,
                 perc
@@ -67,10 +69,10 @@ class Cli(ABC):
         self._print("$$$", pos)
 
     def _print_label(self, label, value, pos=None):
-        self._print("%s: § %s"%(label, value), pos)
+        self._print("%s: § %s" % (label, value), pos)
 
     def _print(self, value, pos=None):
-        if pos == None:
+        if pos is None:
             pos = self._i
 
         value = "| "+value+" |"
@@ -80,7 +82,7 @@ class Cli(ABC):
         self._outputs.update({
             pos: value
         })
-        self._i+=1
+        self._i += 1
 
     def _print_all(self):
         self._print_frame(0)

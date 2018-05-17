@@ -5,8 +5,9 @@ import json
 from numpy import mean, median, var
 from .utils import is_number
 
+
 class Zipf(OrderedDict):
-    """The Zipf class represents a Zipf distribution and offers various tools to edit it easily"""
+    """Zipf represents a Zipf distribution offering tools to edit it easily"""
 
     def __str__(self) -> str:
         """Prints a json dictionary representing the Zipf"""
@@ -21,7 +22,7 @@ class Zipf(OrderedDict):
     def __getitem__(self, key):
         return OrderedDict.__getitem__(self, key)
 
-    def __setitem__(self, key: Union[str, float, int], frequency:float):
+    def __setitem__(self, key: Union[str, float, int], frequency: float):
         """Sets an element of the Zipf to the given frequency
 
         Args:
@@ -36,10 +37,10 @@ class Zipf(OrderedDict):
         raise ValueError("A frequency must be a number.")
 
     def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
-        """Multiplies each value of the Zipf by either a numeric value or the corrisponding word frequency in the other Zipf.
+        """Multiplies the Zipf by a number or the frequency in another Zipf.
 
             Args:
-                value: either a Zipf or a number to be multiplies with the Zipf.
+                value: a Zipf or a number to be multiplies with the Zipf.
 
             Returns:
                 The multiplied Zipf
@@ -51,18 +52,19 @@ class Zipf(OrderedDict):
         if isinstance(value, Zipf):
             oget = value.get
             result = Zipf()
-            for k,v in self.items():
+            for k, v in self.items():
                 other_value = oget(k)
                 if other_value:
                     result[k] = other_value*v
             return result
 
-        raise ValueError("Moltiplication is allowed only with numbers or Zipf objects.")
+        raise ValueError(
+            "Moltiplication is allowed only with numbers or Zipf objects.")
 
     __rmul__ = __mul__
 
     def __truediv__(self, value: Union['Zipf', float, int]) -> 'Zipf':
-        """Divides each value of the Zipf by either a numeric value or the corrisponding word frequency in the other Zipf.
+        """Divides the Zipf by a number or the frequency in another Zipf.
 
             Args:
                 value: either a Zipf or a number to divide the Zipf.
@@ -72,23 +74,24 @@ class Zipf(OrderedDict):
 
         """
         if is_number(value):
-            if value==0:
+            if value == 0:
                 raise ValueError("Division by zero.")
             return Zipf({k: v/value for k, v in self.items()})
 
         if isinstance(value, Zipf):
             oget = value.get
             result = Zipf()
-            for k,v in self.items():
+            for k, v in self.items():
                 other_value = oget(k)
                 if other_value:
                     result[k] = v/other_value
             return result
 
-        raise ValueError("Division is allowed only with numbers or Zipf objects.")
+        raise ValueError(
+            "Division is allowed only with numbers or Zipf objects.")
 
     def __neg__(self):
-        return Zipf({k:-v for k,v in self.items()})
+        return Zipf({k: -v for k, v in self.items()})
 
     def __add__(self, other: 'Zipf') -> 'Zipf':
         """Sums two Zipf
@@ -101,9 +104,9 @@ class Zipf(OrderedDict):
         """
         if isinstance(other, Zipf):
             result = Zipf()
-            for k,v in self.items():
+            for k, v in self.items():
                 result[k] = v
-            for k,v in other.items():
+            for k, v in other.items():
                 if result[k] == -v:
                     result.pop(k, None)
                 else:
@@ -122,9 +125,9 @@ class Zipf(OrderedDict):
         """
         if isinstance(other, Zipf):
             result = Zipf()
-            for k,v in self.items():
+            for k, v in self.items():
                 result[k] = v
-            for k,v in other.items():
+            for k, v in other.items():
                 if result[k] == v:
                     result.pop(k, None)
                 else:
@@ -132,8 +135,8 @@ class Zipf(OrderedDict):
             return result
         raise ValueError("Given argument is not a Zipf object")
 
-    def remap(self, remapper:'Zipf')->'Zipf':
-        """Returns a remapped Zipf to the order of the other Zipf, deleting elements when not present in both.
+    def remap(self, remapper: 'Zipf')->'Zipf':
+        """Remaps Zipf to the order of another, deleting unshared elements.
 
             Args:
                 remapper: a Zipf that is used to remap the current Zipf
@@ -156,20 +159,20 @@ class Zipf(OrderedDict):
         """
         self.check_empty()
         total = sum(list(self.values()))
-        if total!=1:
+        if total != 1:
             return self/total
         return Zipf(self)
 
     def cut(self, _min=0, _max=1)->'Zipf':
         """Returns a Zipf without elements below _min or above _max"""
         result = Zipf()
-        for k,v in self.items():
+        for k, v in self.items():
             if v > _min and v <= _max:
                 result[k] = v
         return result
 
     def round(self):
-        return Zipf({k:round(v,14) for k,v in self.items()})
+        return Zipf({k: round(v, 14) for k, v in self.items()})
 
     def min(self) -> float:
         """Returns the value with minimal frequency in the Zipf"""
@@ -184,17 +187,17 @@ class Zipf(OrderedDict):
     def mean(self)->float:
         """Determines the mean frequency"""
         self.check_empty()
-        return round(mean(list(self.values())),14)
+        return round(mean(list(self.values())), 14)
 
     def median(self)->float:
         """Determines the median frequency"""
         self.check_empty()
-        return round(median(list(self.values())),14)
+        return round(median(list(self.values())), 14)
 
     def var(self)->float:
         """Calculates the variance in the frequencies"""
         self.check_empty()
-        return round(var(list(self.values())),14)
+        return round(var(list(self.values())), 14)
 
     def is_empty(self):
         return len(self) == 0
@@ -228,4 +231,3 @@ class Zipf(OrderedDict):
         """
         with open(path, "w") as f:
             json.dump(self, f)
-

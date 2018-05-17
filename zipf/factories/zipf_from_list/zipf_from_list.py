@@ -1,8 +1,9 @@
 from ...zipf import Zipf
 from ..zipf_factory import ZipfFactory
 
+
 class ZipfFromList(ZipfFactory):
-    def __init__(self, options = None):
+    def __init__(self, options=None):
         super().__init__(options)
 
     def _create_zipf(self, elements, zipf):
@@ -11,7 +12,7 @@ class ZipfFromList(ZipfFactory):
 
         elements_number = len(clean_elements)
 
-        if elements_number==0:
+        if elements_number == 0:
             return zipf
 
         unit = 1/elements_number

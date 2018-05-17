@@ -1,6 +1,7 @@
 import requests
 from ...factories import ZipfFromText
 
+
 class ZipfFromUrl(ZipfFromText):
     def __init__(self, options=None):
         super().__init__(options)

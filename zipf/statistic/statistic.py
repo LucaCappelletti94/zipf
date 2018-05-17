@@ -2,6 +2,7 @@ import time
 from multiprocessing import Lock
 from datetime import datetime, timedelta
 
+
 class Statistic:
     def __init__(self):
         self._running_processes = {}
@@ -31,7 +32,7 @@ class Statistic:
 
     def _lock_sum(self, attribute, value):
         self._lock.acquire()
-        attribute+=value
+        attribute += value
         self._lock.release()
 
     def set_live_process(self, name):
@@ -46,11 +47,11 @@ class Statistic:
     def get_phase(self):
         return self._phase
 
-    def _format_value(self,response,value,pattern):
+    def _format_value(self, response, value, pattern):
         if value > 0:
             if response != "":
-                response+=", "
-            response += pattern%value
+                response += ", "
+            response += pattern % value
         return response
 
     def _seconds_to_string(self, delta):
@@ -58,15 +59,15 @@ class Statistic:
         if delta <= 1:
             return "now"
 
-        d = datetime(1,1,1) + timedelta(seconds=delta)
+        d = datetime(1, 1, 1) + timedelta(seconds=delta)
 
         eta = ""
-        if d.day-1>0:
-            eta += "%sd"%(d.day-1)
+        if d.day-1 > 0:
+            eta += "%sd" % (d.day-1)
 
-        eta = self._format_value(eta,d.hour,  "%sh")
-        eta = self._format_value(eta,d.minute, "%sm")
-        eta = self._format_value(eta,d.second,"%ss")
+        eta = self._format_value(eta, d.hour,  "%sh")
+        eta = self._format_value(eta, d.minute, "%sm")
+        eta = self._format_value(eta, d.second, "%ss")
 
         return eta
 

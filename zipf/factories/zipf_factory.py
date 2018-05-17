@@ -3,21 +3,22 @@ from collections import defaultdict
 import json
 from abc import ABC
 
+
 class ZipfFactory(ABC):
 
     _default_options = {
-        "remove_stop_words":False,
-        "minimum_count":0,
-        "chain_min_len":1,
-        "chain_max_len":1,
-        "chaining_character":" ",
-        "chain_after_filter":False,
-        "chain_after_clean":False
+        "remove_stop_words": False,
+        "minimum_count": 0,
+        "chain_min_len": 1,
+        "chain_max_len": 1,
+        "chaining_character": " ",
+        "chain_after_filter": False,
+        "chain_after_clean": False
     }
 
-    def __init__(self, options = None):
+    def __init__(self, options=None):
         self._word_filter = None
-        if options == None:
+        if options is None:
             options = {}
         self._options = {**self._default_options, **options}
 
@@ -32,16 +33,18 @@ class ZipfFactory(ABC):
 
     __repr__ = __str__
 
-
     def validate_options(self):
         # Validating options types
         for option in self._default_options:
             if type(self._default_options[option]) is not type(self._options[option]):
-                raise ValueError("The given option %s has value %s, type %s expected."%(option, self._options[option], type(self._default_options[option])))
-            if type(self._options[option]) is int and self._options[option]<0:
-                raise ValueError("The given option %s has value %s, negative numbers are not allowed."%(option, self._options[option]))
+                raise ValueError("The given option %s has value %s, type %s expected." % (
+                    option, self._options[option], type(self._default_options[option])))
+            if type(self._options[option]) is int and self._options[option] < 0:
+                raise ValueError("The given option %s has value %s, negative numbers are not allowed." % (
+                    option, self._options[option]))
         if self._options["chain_min_len"] > self._options["chain_max_len"]:
-            raise ValueError("The option 'chain_min_len: %s' must be lower or equal to 'chain_max_len: %s'"%(self._options["chain_min_len"], self._options["chain_max_len"]))
+            raise ValueError("The option 'chain_min_len: %s' must be lower or equal to 'chain_max_len: %s'" % (
+                self._options["chain_min_len"], self._options["chain_max_len"]))
 
     def set_word_filter(self, word_filter):
         """Sets the function that filters words"""
