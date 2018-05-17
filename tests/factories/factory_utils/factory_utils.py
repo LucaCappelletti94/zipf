@@ -3,7 +3,22 @@ import json
 import pytest
 from zipf import Zipf
 
-_options_for_tests = {}
+_options_for_tests = {
+    "stop_words":{
+        "remove_stop_words":True
+    },
+    "minimum_count":{
+        "minimum_count": 2
+    },
+    "chain":{
+        "chain_min_len": 1,
+        "chain_max_len": 3
+    }
+}
+
+_map_test_to_data = {
+    "empty":"empty"
+}
 
 def _get_options_for(test_name):
     global _options_for_tests
@@ -12,13 +27,13 @@ def _get_options_for(test_name):
     return None
 
 def factory_break_options(Factory):
-    non_booleans = [1,0,None,[],{},"test",10,15,-16]
-    non_naturals = [True, False, -1, -10, "test", 0.5, 0.75, None, [],{}]
-    non_characters = [True, False, -1, -10, 0.5, 0.75, None, [],{}]
+    non_booleans = [1,0,None,[],{},"test"]
+    non_naturals = [True, False, -10, "test", 0.5, None, [],{}]
+    non_characters = [True, False, -10, 0.5, None, [],{}]
 
     booleans = [True, False]
-    non_zero_naturals = [1,2,3,4,5,6,7,8,9,10]
-    characters = ['', ' ', '1', '-', '\n']
+    non_zero_naturals = [1,3,8]
+    characters = ['']
 
     wrong_options = []
     for key in ["remove_stop_words", "chain_after_filter", "chain_after_clean"]:
@@ -89,6 +104,10 @@ def factory_break_options(Factory):
             errors.append("Factory %s failed with options %s."%(Factory.__name__, right_option))
     return errors
 
+def map_test_to_data(test):
+    global _map_test_to_data
+    return _map_test_to_data.get(test, "default")
+
 def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
     if prepare == None:
         prepare = Factory
@@ -98,9 +117,10 @@ def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
         enrich = lambda factory, data, zipf: factory.enrich(data, zipf)
     current_path = os.path.dirname(__file__)
     errors = factory_break_options(Factory)
-    for test in ["default", "empty"]:
-        data_path_json = os.path.join(current_path, "%s/%s.json"%(path, test))
-        data_path_text = os.path.join(current_path, "%s/%s.txt"%(path, test))
+    for test in ["default", "empty", "stop_words", "minimum_count", "chain"]:
+        data_path_name = map_test_to_data(test)
+        data_path_json = os.path.join(current_path, "%s/%s.json"%(path, data_path_name))
+        data_path_text = os.path.join(current_path, "%s/%s.txt"%(path, data_path_name))
         result_path = os.path.join(current_path, "expected_results/%s.json"%test)
         if os.path.isfile(data_path_json):
             with open(data_path_json, "r") as f:
@@ -112,13 +132,14 @@ def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
             pytest.skip("While testing %s, data for testing '%s' was not found in %s or %s."%(Factory.__name__, test, data_path_text, data_path_json))
         if not os.path.isfile(result_path):
             pytest.skip("While testing %s, result for testing '%s' was not found in %s."%(Factory.__name__, test, result_path))
-        result = Zipf.load(result_path)
+        result = Zipf.load(result_path).round()
         factory = prepare(_get_options_for(test))
 
-        factory_run = run(factory, data)
+        factory_run = run(factory, data).round()
         if result != factory_run:
             errors.append("%s has not expected result on run test '%s': %s != %s"%(Factory.__name__, test, result, factory_run))
-        factory_enrich = enrich(factory, data, Zipf()).sort()
+        factory_enrich = enrich(factory, data, Zipf()).sort().round()
         if result != factory_enrich:
             errors.append("%s has not expected result on enrich test '%s': %s != %s"%(Factory.__name__, test, result, factory_enrich))
+
     return errors

@@ -6,7 +6,6 @@ class ZipfFromList(ZipfFactory):
         super().__init__(options)
 
     def _create_zipf(self, elements, zipf):
-
         filtered_elements = self._filter(elements)
         clean_elements = self._clean(filtered_elements)
 
@@ -20,7 +19,7 @@ class ZipfFromList(ZipfFactory):
         zget = zipf.get
         zset = zipf.__setitem__
 
-        [zset(element, zget(element, 0) + unit) for element in elements]
+        [zset(element, zget(element, 0) + unit) for element in clean_elements]
 
         return zipf
 
