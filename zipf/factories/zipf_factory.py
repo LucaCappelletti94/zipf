@@ -36,10 +36,10 @@ class ZipfFactory(ABC):
     def validate_options(self):
         # Validating options types
         for option in self._default_options:
-            if type(self._default_options[option]) is not type(self._options[option]):
+            if isistance(self._default_options[option], type(self._options[option])):
                 raise ValueError("The given option %s has value %s, type %s expected." % (
                     option, self._options[option], type(self._default_options[option])))
-            if type(self._options[option]) is int and self._options[option] < 0:
+            if isistance(self._options[option], int) and self._options[option] < 0:
                 raise ValueError("The given option %s has value %s, negative numbers are not allowed." % (
                     option, self._options[option]))
         if self._options["chain_min_len"] > self._options["chain_max_len"]:
@@ -72,7 +72,7 @@ class ZipfFactory(ABC):
             for element in elements:
                 frequency[element] += 1
 
-            return [element for element in elements if frequency[element] > self._options["minimum_count"]]
+            return [el for el in elements if frequency[el] > self._options["minimum_count"]]
         return elements
 
     def _elements_filter(self, element):
