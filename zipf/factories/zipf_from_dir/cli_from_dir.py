@@ -3,13 +3,13 @@ from ...cli import Cli
 
 class CliFromDir(Cli):
     def _update(self):
-        self._statistics.step_speeds()
+        self._statistic.step_speeds()
 
-        self._print(self._statistics.get_phase()+"§")
-        total_files = self._statistics.get_total_files()
-        zipfs_files = self._statistics.get_zipfs()
-        empty_files = self._statistics.get_empty_files()
-        empty_lists = self._statistics.get_empty_lists()
+        self._print(self._statistic.get_phase()+"§")
+        total_files = self._statistic.get_total_files()
+        zipfs_files = self._statistic.get_zipfs()
+        empty_files = self._statistic.get_empty_files()
+        empty_lists = self._statistic.get_empty_lists()
 
         if zipfs_files + empty_files + empty_lists:
             self._print_frame()
@@ -27,8 +27,8 @@ class CliFromDir(Cli):
     def _print_times(self):
         self._print_frame()
         self._print_label("Remaining zips time",
-                          self._statistics.get_remaining_elaboration_time())
-        self._print_label("Elapsed time", self._statistics.get_elapsed_time())
+                          self._statistic.get_remaining_elaboration_time())
+        self._print_label("Elapsed time", self._statistic.get_elapsed_time())
 
     def _print_speeds(self):
-        self._print_speed("Zips", self._statistics.get_elaboration_speed())
+        self._print_speed("Zips", self._statistic.get_elaboration_speed())

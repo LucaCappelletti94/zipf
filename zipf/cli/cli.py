@@ -5,21 +5,21 @@ from time import sleep
 
 
 class Cli(ABC):
-    def __init__(self, statistics):
-        self._statistics = statistics
+    def __init__(self, statistic):
+        self._statistic = statistic
         self._i = 0
         self._max_len = 0
         self._outputs = {}
 
     def _cli(self):
-        self._statistics.set_start_time()
+        self._statistic.set_start_time()
         self._stdscr = curses.initscr()
         curses.noecho()
         curses.cbreak()
         try:
             while True:
                 sleep(0.1)
-                if self._statistics.is_done():
+                if self._statistic.is_done():
                     break
                 self._clear()
 
@@ -43,7 +43,7 @@ class Cli(ABC):
         pass
 
     def _print_processes(self):
-        processes = self._statistics.get_running_processes().items()
+        processes = self._statistic.get_running_processes().items()
 
         if len(processes) > 0:
             self._print_frame()

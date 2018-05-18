@@ -21,13 +21,19 @@ class StatisticFromDir(Statistic):
         self._total_files = total_files
 
     def add_zipf(self, value=1):
-        self._lock_sum(self._zipfs, value)
+        self._lock.acquire()
+        self._zipfs += value
+        self._lock.release()
 
     def add_empty_file(self, value=1):
-        self._lock_sum(self._empty_files, value)
+        self._lock.acquire()
+        self._empty_files += value
+        self._lock.release()
 
     def add_empty_list(self, value=1):
-        self._lock_sum(self._empty_lists, value)
+        self._lock.acquire()
+        self._empty_lists += value
+        self._lock.release()
 
     def is_loader_done(self):
         return self._loader_done

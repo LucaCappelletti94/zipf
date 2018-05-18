@@ -17,13 +17,13 @@ def prep_word_filter(options):
 
 
 def prep_cli(options):
-    factory = ZipfFromDir(options=options, use_cli=True)
+    factory = ZipfFromDir(options=options, use_cli=False)
     factory.set_interface(lambda f: f.read())
     return factory
 
 
 def cli_no_interface(options):
-    factory = ZipfFromDir(options=options, use_cli=True)
+    factory = ZipfFromDir(options=options, use_cli=False)
     return factory
 
 

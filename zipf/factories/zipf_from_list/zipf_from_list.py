@@ -17,10 +17,10 @@ class ZipfFromList(ZipfFactory):
 
         unit = 1/elements_number
 
-        zget = zipf.get
+        zget = zipf.__getitem__
         zset = zipf.__setitem__
 
-        [zset(element, zget(element, 0) + unit) for element in clean_elements]
+        [zset(element, zget(element) + unit) for element in clean_elements]
 
         return zipf
 

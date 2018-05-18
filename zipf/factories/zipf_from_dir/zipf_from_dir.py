@@ -8,7 +8,7 @@ from .cli_from_dir import CliFromDir as cli
 from math import ceil
 
 from glob import glob
-import json
+import os
 import re
 
 MyManager.register('StatisticFromDir', StatisticFromDir)
@@ -50,7 +50,8 @@ class ZipfFromDir(ZipfFromFile):
         files_list = []
         for path in self._validate_base_paths(base_paths):
             for extension in self._extensions:
-                files_list += glob(path+"/*.%s" % extension)
+                files_list += [y for x in os.walk(path)
+                               for y in glob(os.path.join(x[0], '*.%s' % extension))]
 
         files_number = len(files_list)
         if files_number == 0:
@@ -59,7 +60,6 @@ class ZipfFromDir(ZipfFromFile):
         return chunks(files_list, ceil(files_number/self._processes_number))
 
     def _render_zipfs(self, paths_chunk_generator):
-        self._statistic.set_phase("Loading file paths")
         self._zipfs = Manager().list()
         processes = []
         for i, ch in enumerate(paths_chunk_generator):
@@ -79,8 +79,12 @@ class ZipfFromDir(ZipfFromFile):
             self._cli = cli(self._statistic)
             self._cli.run()
 
+        self._statistic.set_phase("Loading file paths")
         paths_chunk_generator = self._load_paths(paths)
         if paths_chunk_generator is None:
+            self._statistic.done()
+            if self._use_cli:
+                self._cli.join()
             return Zipf()
 
         zipfs = self._render_zipfs(paths_chunk_generator)

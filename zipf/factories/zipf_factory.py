@@ -17,15 +17,17 @@ class ZipfFactory(ABC):
     }
 
     def __init__(self, options=None):
-        self._word_filter = None
         if options is None:
             options = {}
         self._options = {**self._default_options, **options}
 
         self.validate_options()
+        self._word_filter = lambda el: True
 
         if self._options["remove_stop_words"]:
             self._load_stop_words()
+        else:
+            self._stop_word_filter = lambda el: True
 
     def __str__(self) -> str:
         """Prints a json dictionary representing the Zipf"""
@@ -52,17 +54,12 @@ class ZipfFactory(ABC):
 
     def _load_stop_words(self):
         with open(os.path.join(os.path.dirname(__file__), 'stop_words.json'), "r") as f:
-            self._stop_words = json.load(f)
-
-    def _custom_word_filter(self, element):
-        if self._word_filter:
-            return self._word_filter(element)
-        return True
+            self._stop_words = {}
+            for w in json.load(f):
+                self._stop_words[w] = None
 
     def _stop_word_filter(self, element):
-        if self._options["remove_stop_words"]:
-            return element not in self._stop_words
-        return True
+        return element not in self._stop_words
 
     def _remove_low_count(self, elements):
         # remove words that appear only once
@@ -76,7 +73,7 @@ class ZipfFactory(ABC):
         return elements
 
     def _elements_filter(self, element):
-        return self._stop_word_filter(element) and self._custom_word_filter(element)
+        return self._stop_word_filter(element) and self._word_filter(element)
 
     def _clean(self, elements):
         cleaned_elements = self._remove_low_count(elements)
