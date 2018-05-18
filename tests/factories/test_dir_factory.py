@@ -38,9 +38,8 @@ def enrich(factory, data, zipf):
 # @pytest.mark.skip(reason="Test is too slow but working, currently disabled.")
 def test_dir_factory():
     errors = []
-    for d in ["dir"]:  # ["dir", "multi_dir", "multi_paths"]:
-        # [None, prep, prep_word_filter, prep_cli, cli_no_interface]:
-        for pr in [None]:
+    for d in ["dir", "multi_dir", "multi_paths"]:
+        for pr in [None, prep, prep_word_filter, prep_cli, cli_no_interface]:
             for r in [None, run]:
                 for e in [None, enrich]:
                     errors += factory_fails(ZipfFromDir,
