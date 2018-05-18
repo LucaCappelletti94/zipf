@@ -30,13 +30,8 @@ class ZipfFromDir(ZipfFromFile):
             z = super().enrich(path, z)
             n += 1
             self._statistic.add_zipf()
-        self._zipfs.append(z/n)
+        self._zipfs.append((z/n).render())
         self._statistic.set_dead_process("text to zipf converter")
-
-    def _merge(zipfs):
-        if len(zipfs) == 2:
-            return zipfs[0] + zipfs[1]
-        return zipfs[0]
 
     def _validate_base_paths(self, base_paths):
         if isinstance(base_paths, str):
@@ -76,14 +71,6 @@ class ZipfFromDir(ZipfFromFile):
             p.join()
         return self._zipfs
 
-    def _merge_zipfs(self, zipfs):
-        with Pool(min(self._processes_number, len(zipfs))) as p:
-            while len(zipfs) >= 2:
-                self._statistic.set_phase("Merging %s zipfs" % len(zipfs))
-                zipfs = list(
-                    p.imap(ZipfFromDir._merge, list(chunks(zipfs, 2))))
-        return zipfs[0]
-
     def run(self, paths, extensions=None):
         self._statistic = self._myManager.statistic()
         self._prepare_extensions(extensions)
@@ -98,13 +85,9 @@ class ZipfFromDir(ZipfFromFile):
 
         zipfs = self._render_zipfs(paths_chunk_generator)
 
-        zipfs_number = len(zipfs)
-
-        zipf = self._merge_zipfs(zipfs)
-
         self._statistic.set_phase("Normalizing zipfs")
 
-        normalized_zipf = (zipf/zipfs_number).sort()
+        normalized_zipf = (sum(zipfs)/len(zipfs)).sort()
 
         self._statistic.done()
 

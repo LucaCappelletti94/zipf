@@ -1,7 +1,8 @@
 from zipf import Zipf
 
+
 def test_str():
-    z = Zipf({"g":1})
+    z = Zipf({"g": 1})
     assert (
         str(z),
         str(Zipf()),

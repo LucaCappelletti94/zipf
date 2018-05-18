@@ -1,6 +1,7 @@
 from __future__ import division
 from typing import Union
 from collections import OrderedDict
+from functools import cmp_to_key
 import json
 from numpy import mean, median, var
 from .utils import is_number
@@ -9,8 +10,21 @@ from .utils import is_number
 class Zipf(OrderedDict):
     """Zipf represents a Zipf distribution offering tools to edit it easily"""
 
+    def __init__(self, items=None):
+        if items:
+            super().__init__(items)
+        self._unrendered = False
+
+    def _set_unrendered(self):
+        self._unrendered = True
+
+    def is_unrendered(self):
+        return self._unrendered
+
     def __str__(self) -> str:
         """Prints a json dictionary representing the Zipf"""
+        if self.is_unrendered():
+            self = self.render()
         return json.dumps(self, indent=2)
 
     __repr__ = __str__
@@ -31,10 +45,10 @@ class Zipf(OrderedDict):
 
         """
 
-        if is_number(frequency):
-            return OrderedDict.__setitem__(self, key, frequency)
+        if not is_number(frequency):
+            raise ValueError("A frequency must be a number.")
 
-        raise ValueError("A frequency must be a number.")
+        OrderedDict.__setitem__(self, key, frequency)
 
     def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
         """Multiplies the Zipf by a number or the frequency in another Zipf.
@@ -46,20 +60,23 @@ class Zipf(OrderedDict):
                 The multiplied Zipf
 
         """
-        if is_number(value):
-            return Zipf({k: v*value for k, v in self.items()})
 
-        if not isinstance(value, Zipf):
+        if not isinstance(value, Zipf) and not is_number(value):
             raise ValueError(
                 "Moltiplication is allowed only with numbers or Zipf objects.")
 
-        oget = value.get
-        result = Zipf()
-        for k, v in self.items():
-            other_value = oget(k)
-            if other_value:
-                result[k] = other_value*v
-        return result
+        z = Zipf()
+        z._set_unrendered()
+        if is_number(value):
+            def getitem(key):
+                return self.__getitem__(key)*value
+            z.keys = self.keys
+        else:
+            def getitem(key):
+                return self.__getitem__(key)*value.__getitem__(key)
+            z.keys = lambda: list(set(self) | set(value))
+        z.__getitem__ = getitem
+        return z
 
     __rmul__ = __mul__
 
@@ -76,23 +93,32 @@ class Zipf(OrderedDict):
         if value == 0:
             raise ValueError("Division by zero.")
 
-        if is_number(value):
-            return Zipf({k: v/value for k, v in self.items()})
-
-        if not isinstance(value, Zipf):
+        if not isinstance(value, Zipf) and not is_number(value):
             raise ValueError(
                 "Division is allowed only with numbers or Zipf objects.")
 
-        oget = value.get
-        result = Zipf()
-        for k, v in self.items():
-            other_value = oget(k)
-            if other_value:
-                result[k] = v/other_value
-        return result
+        z = Zipf()
+        z._set_unrendered()
+        if is_number(value):
+            def getitem(key):
+                return self.__getitem__(key)/value
+            z.keys = self.keys
+        else:
+            def getitem(key):
+                return self.__getitem__(key)/value.__getitem__(key)
+            z.keys = lambda: list(set(self.keys()) & set(value.keys()))
+        z.__getitem__ = getitem
+        return z
 
     def __neg__(self):
-        return Zipf({k: -v for k, v in self.items()})
+        z = Zipf()
+        z._set_unrendered()
+
+        def getitem(key):
+            return -self.__getitem__(key)
+        z.__getitem__ = getitem
+        z.keys = self.keys
+        return z
 
     def __add__(self, other: 'Zipf') -> 'Zipf':
         """Sums two Zipf
@@ -104,16 +130,20 @@ class Zipf(OrderedDict):
 
         """
         if isinstance(other, Zipf):
-            result = Zipf()
-            for k, v in self.items():
-                result[k] = v
-            for k, v in other.items():
-                if result[k] == -v:
-                    result.pop(k, None)
-                else:
-                    result[k] += v
-            return result
+            z = Zipf()
+            z._set_unrendered()
+
+            def getitem(key):
+                return self.__getitem__(key)+other.__getitem__(key)
+            z.__getitem__ = getitem
+            z.keys = lambda: list(set(self.keys()) | set(other.keys()))
+            return z
         raise ValueError("Given argument is not a Zipf object")
+
+    def __radd__(self, other):
+        if other == 0:
+            return self
+        return self + other
 
     def __sub__(self, other: 'Zipf') -> 'Zipf':
         """Subtracts two Zipf
@@ -125,16 +155,36 @@ class Zipf(OrderedDict):
 
         """
         if isinstance(other, Zipf):
-            result = Zipf()
-            for k, v in self.items():
-                result[k] = v
-            for k, v in other.items():
-                if result[k] == v:
-                    result.pop(k, None)
-                else:
-                    result[k] -= v
-            return result
+            z = Zipf()
+            z._set_unrendered()
+
+            def getitem(key):
+                return self.__getitem__(key)-other.__getitem__(key)
+            z.__getitem__ = getitem
+            z.keys = lambda: list(set(self.keys()) | set(other.keys()))
+            return z
         raise ValueError("Given argument is not a Zipf object")
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Zipf):
+            return False
+
+        if self.is_unrendered():
+            self = self.render()
+        if other.is_unrendered():
+            other = other.render()
+
+        return OrderedDict.__eq__(self, other)
+
+    def render(self):
+        """Renders the __getitem__, so that it does not call its alias chain"""
+        rendered = Zipf()
+        get = self.__getitem__
+        for k in self.keys():
+            v = get(k)
+            if v:
+                rendered[k] = v
+        return rendered.sort()
 
     def remap(self, remapper: 'Zipf')->'Zipf':
         """Remaps Zipf to the order of another, deleting unshared elements.
@@ -207,9 +257,21 @@ class Zipf(OrderedDict):
         if self.is_empty():
             raise ValueError("The Zipf is empty!")
 
+    def _compare(x, y):
+        if x[1] < y[1]:
+            return -1
+        elif x[1] > y[1]:
+            return 1
+        elif x[0] < y[0]:
+            return -1
+        else:
+            return 1
+
     def sort(self)->'Zipf':
         """Returns the sorted Zipf, based on the frequency value"""
-        return Zipf(sorted(self.items(), key=lambda t: t[1], reverse=True))
+        if self.is_unrendered():
+            return self.render()
+        return Zipf(sorted(self.items(), key=cmp_to_key(Zipf._compare), reverse=True))
 
     def load(path: str) -> 'Zipf':
         """Loads a Zipf from the given path.

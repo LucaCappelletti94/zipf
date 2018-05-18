@@ -19,7 +19,8 @@ def test_ksequence_factory():
 
     current_path = os.path.dirname(__file__)+"/factory_utils"
 
-    zipf = Zipf.load(current_path+"/expected_results/sequence.json").round()
+    zipf = Zipf.load(
+        current_path+"/expected_results/sequence.json").sort().round()
 
     with open(current_path+"/sequence/sequence.txt", "r") as f:
         sequence = f.read()

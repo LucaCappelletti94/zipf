@@ -164,7 +164,7 @@ def factory_fails(Factory, path, prepare=None, run=None, enrich=None):
         if not os.path.isfile(result_path):
             pytest.skip("While testing %s, result for testing '%s' was not found in %s." % (
                 Factory.__name__, test, result_path))
-        result = Zipf.load(result_path).round()
+        result = Zipf.load(result_path).sort().round()
         factory = prepare(options=_get_options_for(test))
 
         factory_run = run(factory, data).round()
