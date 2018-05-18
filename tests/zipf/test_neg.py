@@ -7,6 +7,6 @@ def test_neg():
         z,
         Zipf({"two": -0.5, "one": -1})
     ) == (
-        -(-z),
-        -z
+        (-(-z)).sort(),
+        (-z).sort()
     )

@@ -184,7 +184,7 @@ class Zipf(OrderedDict):
             v = get(k)
             if v:
                 rendered[k] = v
-        return rendered.sort()
+        return rendered
 
     def remap(self, remapper: 'Zipf')->'Zipf':
         """Remaps Zipf to the order of another, deleting unshared elements.
@@ -270,8 +270,12 @@ class Zipf(OrderedDict):
     def sort(self)->'Zipf':
         """Returns the sorted Zipf, based on the frequency value"""
         if self.is_unrendered():
-            return self.render()
-        return Zipf(sorted(self.items(), key=cmp_to_key(Zipf._compare), reverse=True))
+            return self.render().sort()
+        return Zipf(sorted(
+            self.items(),
+            key=cmp_to_key(Zipf._compare),
+            reverse=True
+        ))
 
     def load(path: str) -> 'Zipf':
         """Loads a Zipf from the given path.
