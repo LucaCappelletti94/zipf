@@ -3,7 +3,7 @@ from ...mp.managers import MyManager
 from ...utils import chunks
 from ...zipf import Zipf
 from ...factories import ZipfFromFile
-from .statistic_from_dir import StatisticFromDir as statistic
+from .statistic_from_dir import StatisticFromDir
 from .cli_from_dir import CliFromDir as cli
 from math import ceil
 
@@ -11,7 +11,7 @@ from glob import glob
 import json
 import re
 
-MyManager.register('statistic', statistic)
+MyManager.register('StatisticFromDir', StatisticFromDir)
 
 
 class ZipfFromDir(ZipfFromFile):
@@ -72,7 +72,7 @@ class ZipfFromDir(ZipfFromFile):
         return self._zipfs
 
     def run(self, paths, extensions=None):
-        self._statistic = self._myManager.statistic()
+        self._statistic = self._myManager.StatisticFromDir()
         self._prepare_extensions(extensions)
 
         if self._use_cli:
