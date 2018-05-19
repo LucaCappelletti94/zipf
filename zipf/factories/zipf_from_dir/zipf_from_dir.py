@@ -25,12 +25,12 @@ class ZipfFromDir(ZipfFromFile):
         self._processes_number = cpu_count()
 
     def _text_to_zipf(self, paths):
-        z = Zipf()
+        self.set_product(Zipf())
         self._statistic.set_live_process("text to zipf converter")
         for path in paths:
-            z += super().run(path)
+            super().run(path)
             self._statistic.add_zipf()
-        self._zipfs.append((z/len(paths)).render())
+        self._zipfs.append((self.get_product()/len(paths)).render())
         self._statistic.set_dead_process("text to zipf converter")
 
     def _validate_base_paths(self, base_paths):

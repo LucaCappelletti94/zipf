@@ -22,6 +22,7 @@ class ZipfFactory():
 
         self.validate_opts()
         self._word_filter = lambda el: True
+        self._product = None
 
         if self._opts["remove_stop_words"]:
             self._load_stop_words()
@@ -53,6 +54,12 @@ class ZipfFactory():
         _max = self._opts["chain_max_len"]
         if _min > _max:
             raise ValueError("min %s must be <= max %s" % (_min, _max))
+
+    def set_product(self, product):
+        self._product = product
+
+    def get_product(self):
+        return self._product
 
     def set_word_filter(self, word_filter):
         """Sets the function that filters words"""
@@ -109,6 +116,11 @@ class ZipfFactory():
         if n == 0:
             return zipf
         z = zipf/n
+        if self._product is not None:
+            product_get = self._product.__getitem__
+            product_set = self._product.__setitem__
+            for k, v in zipf.items():
+                product_set(k, product_get(k)+v/n)
         if self._opts["sort"]:
             return z.sort()
         return z
