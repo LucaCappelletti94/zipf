@@ -50,30 +50,22 @@ class Zipf(OrderedDict):
 
         OrderedDict.__setitem__(self, key, frequency)
 
-    def smaller(self, other):
-        """Returns the zipf with more words, then the one with less words"""
-        if len(self) > len(other):
-            return self, other
-        return other, self
-
     def and_keygen(self, other):
-        big, small = self.smaller(other)
+        # big, small = self.smaller(other)
 
         def getkeys():
-            for key in small.keys():
-                if big.__getitem__(key):
+            for key in self.keys():
+                if other.__getitem__(key):
                     yield key
 
         return getkeys
 
     def or_keygen(self, other):
-        big, small = self.smaller(other)
-
         def getkeys():
-            for key in big.keys():
+            for key in other.keys():
                 yield key
-            for key in small.keys():
-                if not big.__getitem__(key):
+            for key in self.keys():
+                if not other.__getitem__(key):
                     yield key
 
         return getkeys
