@@ -29,14 +29,15 @@ I wrote another package called `dictances`_ which calculates various distances a
     from zipf import Zipf
     from dictances import *
 
-    a=zipf.load("my_first_zipf.json")
-    b=zipf.load("my_second_zipf.json")
+    a = zipf.load("my_first_zipf.json")
+    b = zipf.load("my_second_zipf.json")
 
-    euclidean(a,b)
-    chebyshev(a,b)
-    hamming(a,b)
-    kullback_leibler(a,b)
-    jensen_shannon(a,b)
+    euclidean(a, b)
+    chebyshev(a, b)
+    hamming(a, b)
+    kullback_leibler(a, b)
+    jensen_shannon(a, b)
+
 
 --------------------------------------
 Creating a zipf using a zipf_factory
