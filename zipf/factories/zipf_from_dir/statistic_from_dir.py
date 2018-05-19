@@ -9,8 +9,6 @@ class StatisticFromDir(Statistic):
         self._total_files = 0
         self._empty_files = 0
         self._empty_lists = 0
-        self._estimate_update_timeout = 1
-        self._last_estimate_update = 0
         self._elaboration_speed = Derivative(1, resolution=100)
         self._loader_done = False
 
@@ -59,10 +57,8 @@ class StatisticFromDir(Statistic):
         return self._elaboration_speed.speed()
 
     def step_speeds(self):
-        if time() - self._last_estimate_update > self._estimate_update_timeout:
-            self._last_estimate_update = time()
-            self._elaboration_speed.step(
-                self._zipfs + self._empty_lists + self._empty_files)
+        self._elaboration_speed.step(
+            self._zipfs + self._empty_lists + self._empty_files)
 
     def get_remaining_elaboration_time(self):
         return self._get_remaining_time(
