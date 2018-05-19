@@ -10,10 +10,9 @@ class ZipfFromText(ZipfFromList):
 
     def _extract_words(self, text):
         """Extract a zipf distribution from the given text"""
-        return list(filter(None, split(self._words_regex, text)))
+        for word in split(self._words_regex, text):
+            if word:
+                yield word
 
     def run(self, text):
         return super().run(self._extract_words(text))
-
-    def enrich(self, text, zipf):
-        return super().enrich(self._extract_words(text), zipf)
