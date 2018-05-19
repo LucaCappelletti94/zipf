@@ -10,12 +10,10 @@ class ZipfFromKSequence(ZipfFromList):
             raise ValueError("The attribute k cannot be less than zero!")
         self._k = k
 
-    def _split_sequences(self, text):
+    def _split_sequences(self, sequence):
         """Extract a zipf distribution from the given text"""
-        return [text[i:i+self._k] for i in range(0, len(text), self._k)]
+        for i in range(0, len(sequence), self._k):
+            yield sequence[i:i+self._k]
 
-    def run(self, text):
-        return super().run(self._split_sequences(text))
-
-    def enrich(self, text, zipf):
-        return super().enrich(self._split_sequences(text), zipf)
+    def run(self, sequence):
+        return super().run(self._split_sequences(sequence))
