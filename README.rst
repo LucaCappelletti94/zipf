@@ -75,8 +75,11 @@ Zipf from a text
     from zipf.factories import ZipfFromText
 
     my_factory = ZipfFromText()
-    my_factory.set_word_filter(lambda w: len(w)>3)
-    my_zipf = my_factory.run("You've got to find what you love. And that is as true for your work as it is for your lovers … Keep looking. Don't settle.")
+    my_factory.set_word_filter(lambda w: len(w) > 3)
+    my_zipf = my_factory.run(
+        """You've got to find what you love.
+           And that is as true for your work as it is for your lovers.
+           Keep looking. Don't settle.""")
 
     print(my_zipf)
 
@@ -96,6 +99,7 @@ Zipf from a text
     }
     '''
 
+
 Zipf from a k-sequence
 -------------------------
 .. code:: python
@@ -104,7 +108,8 @@ Zipf from a k-sequence
 
     sequence_fraction_len = 5
     my_factory = ZipfFromKSequence(sequence_fraction_len)
-    my_zipf = my_factory.run("ACTGGAAATGATGGDTGATDGATGAGTDGATGGGGGAAAGDTGATDGATDGATGDTGGGGADDDGATAGDTAGTDGAGAGAGDTGATDGAAAGDTG")
+    my_zipf = my_factory.run(
+        "ACTGGAAATGATGGDTGATDGATGAGTDGATGGGGGAAAGDTGATDGATDGATGDTGGGGADDDGATAGDTAGTDGAGAGAGDTGATDGAAAGDTG")
 
     print(my_zipf)
 
@@ -133,6 +138,7 @@ Zipf from a k-sequence
     '''
 
 
+
 Zipf from a text file
 -------------------------
 .. code:: python
@@ -140,7 +146,7 @@ Zipf from a text file
     from zipf.factories import ZipfFromFile
 
     my_factory = ZipfFromFile()
-    my_factory.set_word_filter(lambda w: w!="brown")
+    my_factory.set_word_filter(lambda w: w != "brown")
     my_zipf = my_factory.run()
 
     print(my_zipf)
@@ -159,6 +165,7 @@ Zipf from a text file
     '''
 
 
+
 Zipf from webpage
 -------------------------
 .. code:: python
@@ -167,7 +174,7 @@ Zipf from webpage
     import json
 
     my_factory = ZipfFromUrl()
-    my_factory.set_word_filter(lambda w: int(w)>100)
+    my_factory.set_word_filter(lambda w: int(w) > 100)
     my_factory.set_interface(lambda r: json.loads(r.text)["ip"])
     my_zipf = my_factory.run("https://api.ipify.org/?format=json")
 
@@ -181,6 +188,7 @@ Zipf from webpage
     '''
 
 
+
 Zipf from directory
 -------------------------
 .. code:: python
@@ -189,12 +197,18 @@ Zipf from directory
     import json
 
     my_factory = ZipfFromDir(use_cli=True)
-    my_factory.set_word_filter(lambda w: len(w)>4)
+    my_factory.set_word_filter(lambda w: len(w) > 4)
     my_zipf = my_factory.run("path/to/my/directory", ["txt"])
 
-    # My directory contains 2 files with the following texts:
-    # 1) You must not lose faith in humanity. Humanity is an ocean; if a few drops of the ocean are dirty, the ocean does not become dirty.
-    # 2) Try not to become a man of success, but rather try to become a man of value.
+    '''
+    My directory contains 2 files with the following texts:
+
+    - You must not lose faith in humanity.
+      Humanity is an ocean; if a few drops of the ocean are dirty,
+      the ocean does not become dirty.
+    - Try not to become a man of success,
+      but rather try to become a man of value.
+    '''
 
     print(my_zipf)
 
@@ -213,6 +227,7 @@ Zipf from directory
     }
     '''
 
+
 --------------------------------------
 Options in creating a zipf
 --------------------------------------
@@ -226,9 +241,9 @@ Some built in options are available, and you can read the options of any factory
 
     '''
     {
-      "remove_stop_words": false, # Removes stop words (currently only Italian ones, I'll extend it in the future if needed)
-      "minimum_count": 0, # Removes words that appear less than 'minimum_count' times
-      "chain_min_len": 1, # Chains up words, starting by a minimum of 'chain_min_len'
+      "remove_stop_words": false, # Removes stop words (currently only Italian's)
+      "minimum_count": 0, # Removes words that appear less than 'minimum_count'
+      "chain_min_len": 1, # Chains up words, starting by a min of 'chain_min_len'
       "chain_max_len": 1, # and ending to a maximum of 'chain_max_len'
       "chaining_character": " ", # The character to interpose between words
       "chain_after_filter": false, # The chaining is done after filtering
