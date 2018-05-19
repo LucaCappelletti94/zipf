@@ -8,7 +8,8 @@ from .cli_from_dir import CliFromDir as cli
 from math import ceil
 
 from glob import glob
-import os
+from os import walk
+from os.path import join
 import re
 
 MyManager.register('StatisticFromDir', StatisticFromDir)
@@ -24,13 +25,11 @@ class ZipfFromDir(ZipfFromFile):
 
     def _text_to_zipf(self, paths):
         z = Zipf()
-        n = 0
         self._statistic.set_live_process("text to zipf converter")
         for path in paths:
             z = super().enrich(path, z)
-            n += 1
             self._statistic.add_zipf()
-        self._zipfs.append((z/n).render())
+        self._zipfs.append((z/len(paths)).render())
         self._statistic.set_dead_process("text to zipf converter")
 
     def _validate_base_paths(self, base_paths):
@@ -50,8 +49,8 @@ class ZipfFromDir(ZipfFromFile):
         files_list = []
         for path in self._validate_base_paths(base_paths):
             for extension in self._extensions:
-                files_list += [y for x in os.walk(path)
-                               for y in glob(os.path.join(x[0], '*.%s' % extension))]
+                files_list += [y for x in walk(path)
+                               for y in glob(join(x[0], '*.%s' % extension))]
 
         files_number = len(files_list)
         if files_number == 0:
@@ -62,6 +61,7 @@ class ZipfFromDir(ZipfFromFile):
     def _render_zipfs(self, paths_chunk_generator):
         self._zipfs = Manager().list()
         processes = []
+        self._statistic.set_phase("Starting processes")
         for i, ch in enumerate(paths_chunk_generator):
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
