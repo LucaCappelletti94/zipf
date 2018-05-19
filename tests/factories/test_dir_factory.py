@@ -31,19 +31,13 @@ def run(factory, data):
     return factory.run(data, ["txt"])
 
 
-def enrich(factory, data, zipf):
-    return factory.enrich(data, zipf, ["txt"])
-
-
-# @pytest.mark.skip(reason="Test is too slow but working, currently disabled.")
 def test_dir_factory():
     errors = []
     for d in ["dir", "multi_dir", "multi_paths"]:
         for pr in [None, prep, prep_word_filter, prep_cli, cli_no_interface]:
             for r in [None, run]:
-                for e in [None, enrich]:
-                    errors += factory_fails(ZipfFromDir,
-                                            d, prepare=pr, run=r, enrich=e)
+                errors += factory_fails(ZipfFromDir,
+                                        d, prepare=pr, run=r)
     try:
         f = ZipfFromDir()
         f.run(None)
