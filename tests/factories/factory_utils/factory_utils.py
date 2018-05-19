@@ -29,9 +29,9 @@ def _get_options_for(test_name):
 
 
 def factory_break_options(Factory):
-    non_booleans = [1, 0, None, [], {}, "test"]
-    non_naturals = [True, False, -10, "test", 0.5, None, [], {}]
-    non_characters = [True, False, -10, 0.5, None, [], {}]
+    non_booleans = [1, 0, None, "test"]
+    non_naturals = [True, False, -10, "test", 0.5, None]
+    non_characters = [True, False, -10, 0.5, None]
 
     booleans = [True, False]
     non_zero_naturals = [1, 3, 8]
