@@ -32,11 +32,11 @@ class Cli(ABC):
             curses.echo()
             curses.nocbreak()
             curses.endwin()
-        except Exception as e:
+        except KeyboardInterrupt as e:
             curses.echo()
             curses.nocbreak()
             curses.endwin()
-            raise
+            pass
 
     @abstractmethod
     def _update(self):
