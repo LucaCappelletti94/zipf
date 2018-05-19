@@ -12,6 +12,6 @@ def test_mul():
         Zipf({"one": 0.75}),
     ) == (
         z*2,
-        (z*z2).sort(),
-        (z*z3).sort()
+        (z*z2*z2*z2).sort(),
+        (z*z3*z3*z3).sort()
     )
