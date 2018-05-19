@@ -50,6 +50,34 @@ class Zipf(OrderedDict):
 
         OrderedDict.__setitem__(self, key, frequency)
 
+    def smaller(self, other):
+        """Returns the zipf with more words, then the one with less words"""
+        if len(self) > len(other):
+            return self, other
+        return other, self
+
+    def and_keygen(self, other):
+        big, small = self.smaller(other)
+
+        def getkeys():
+            for key in small.keys():
+                if big.__getitem__(key):
+                    yield key
+
+        return getkeys
+
+    def or_keygen(self, other):
+        big, small = self.smaller(other)
+
+        def getkeys():
+            for key in big.keys():
+                yield key
+            for key in small.keys():
+                if not big.__getitem__(key):
+                    yield key
+
+        return getkeys
+
     def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
         """Multiplies the Zipf by a number or the frequency in another Zipf.
 
@@ -74,7 +102,7 @@ class Zipf(OrderedDict):
         else:
             def getitem(key):
                 return self.__getitem__(key)*value.__getitem__(key)
-            z.keys = lambda: list(set(self) | set(value))
+            z.keys = self.and_keygen(value)
         z.__getitem__ = getitem
         return z
 
@@ -106,7 +134,7 @@ class Zipf(OrderedDict):
         else:
             def getitem(key):
                 return self.__getitem__(key)/value.__getitem__(key)
-            z.keys = lambda: list(set(self.keys()) & set(value.keys()))
+            z.keys = self.and_keygen(value)
         z.__getitem__ = getitem
         return z
 
@@ -136,7 +164,7 @@ class Zipf(OrderedDict):
             def getitem(key):
                 return self.__getitem__(key)+other.__getitem__(key)
             z.__getitem__ = getitem
-            z.keys = lambda: list(set(self.keys()) | set(other.keys()))
+            z.keys = self.or_keygen(other)
             return z
         raise ValueError("Given argument is not a Zipf object")
 
@@ -161,7 +189,7 @@ class Zipf(OrderedDict):
             def getitem(key):
                 return self.__getitem__(key)-other.__getitem__(key)
             z.__getitem__ = getitem
-            z.keys = lambda: list(set(self.keys()) | set(other.keys()))
+            z.keys = self.or_keygen(other)
             return z
         raise ValueError("Given argument is not a Zipf object")
 
