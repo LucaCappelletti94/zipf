@@ -1,10 +1,10 @@
 import os
 from collections import defaultdict
-from ..zipf import Zipf
 import json
+from abc import ABC
 
 
-class ZipfFactory():
+class ZipfFactory(ABC):
 
     _default_opts = {
         "remove_stop_words": False,
@@ -12,7 +12,8 @@ class ZipfFactory():
         "chain_min_len": 1,
         "chain_max_len": 1,
         "chaining_character": " ",
-        "sort": True
+        "chain_after_filter": False,
+        "chain_after_clean": False
     }
 
     def __init__(self, options=None):
@@ -27,10 +28,9 @@ class ZipfFactory():
             self._load_stop_words()
         else:
             self._stop_word_filter = lambda el: True
-            self._filter = lambda elements: elements
 
         if self._opts["minimum_count"] == 0:
-            self._clean = lambda elements: elements
+            self._remove_low_count = lambda elements: elements
 
         if self._opts["chain_min_len"] == self._opts["chain_max_len"] == 1:
             self._chain = lambda elements: elements
@@ -43,25 +43,23 @@ class ZipfFactory():
 
     def validate_opts(self):
         # Validating options types
-        for opt in self._default_opts:
-            if not isinstance(self._default_opts[opt], type(self._opts[opt])):
-                raise ValueError("The given option %s should have type %s." % (
-                    opt, type(self._default_opts[opt])))
-            if isinstance(self._opts[opt], int) and self._opts[opt] < 0:
-                raise ValueError("The given option %s is negative." % (opt))
-        _min = self._opts["chain_min_len"]
-        _max = self._opts["chain_max_len"]
-        if _min > _max:
-            raise ValueError("min %s must be <= max %s" % (_min, _max))
+        for option in self._default_opts:
+            if not isinstance(self._default_opts[option], type(self._opts[option])):
+                raise ValueError("The given option %s has value %s, type %s expected." % (
+                    option, self._opts[option], type(self._default_opts[option])))
+            if isinstance(self._opts[option], int) and self._opts[option] < 0:
+                raise ValueError("The given option %s has value %s, negative numbers are not allowed." % (
+                    option, self._opts[option]))
+        if self._opts["chain_min_len"] > self._opts["chain_max_len"]:
+            raise ValueError("The option 'chain_min_len: %s' must be lower or equal to 'chain_max_len: %s'" % (
+                self._opts["chain_min_len"], self._opts["chain_max_len"]))
 
     def set_word_filter(self, word_filter):
         """Sets the function that filters words"""
         self._word_filter = word_filter
-        self._filter = lambda elements: ZipfFactory._filter(self, elements)
 
     def _load_stop_words(self):
-        path = os.path.join(os.path.dirname(__file__), 'stop_words.json')
-        with open(path, "r") as f:
+        with open(os.path.join(os.path.dirname(__file__), 'stop_words.json'), "r") as f:
             self._stop_words = {}
             for w in json.load(f):
                 self._stop_words[w] = None
@@ -69,22 +67,29 @@ class ZipfFactory():
     def _stop_word_filter(self, element):
         return element not in self._stop_words
 
-    def _filter(self, elements):
-        for element in elements:
-            if self._stop_word_filter(element) and self._word_filter(element):
-                yield element
-
-    def _clean(self, elements):
+    def _remove_low_count(self, elements):
         frequency = defaultdict(int)
-        elements = list(elements)
         for element in elements:
             frequency[element] += 1
 
-        _min = self._opts["minimum_count"]
+        return [el for el in elements if frequency[el] > self._opts["minimum_count"]]
 
-        for el in elements:
-            if frequency[el] > _min:
-                yield el
+    def _elements_filter(self, element):
+        return self._stop_word_filter(element) and self._word_filter(element)
+
+    def _clean(self, elements):
+        cleaned_elements = self._remove_low_count(elements)
+        if self._opts["chain_after_clean"]:
+            return self._chain(cleaned_elements)
+        return cleaned_elements
+
+    def _filter(self, elements):
+        if not (self._opts["chain_after_filter"] or self._opts["chain_after_clean"]):
+            elements = self._chain(elements)
+        filtered_elements = list(filter(self._elements_filter, elements))
+        if self._opts["chain_after_filter"]:
+            return self._chain(filtered_elements)
+        return filtered_elements
 
     def _chain(self, elements):
         chained_elements = []
@@ -92,23 +97,10 @@ class ZipfFactory():
         join = self._opts["chaining_character"].join
         _min = self._opts["chain_min_len"]
         _max = self._opts["chain_max_len"]
-        elements = list(elements)
-        n = len(elements)
-        for i in range(n):
-            for j in range(i+_min,  min(i+_max+1, n+1)):
-                yield join(elements[i:j])
+        for i in range(len(elements)):
+            for j in range(i+_min, i+_max+1):
+                append(join(elements[i:j]))
+        return chained_elements
 
-    def run(self, elements):
-        zipf = Zipf()
-        zget = zipf.__getitem__
-        zset = zipf.__setitem__
-        n = 0
-        for el in self._clean(self._filter(self._chain(elements))):
-            zset(el, zget(el)+1)
-            n += 1
-        if n == 0:
-            return zipf
-        z = zipf/n
-        if self._opts["sort"]:
-            return z.sort()
-        return z
+    def run(self, _zipf):
+        return _zipf.sort()

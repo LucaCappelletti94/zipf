@@ -1,6 +1,5 @@
 from zipf.factories import ZipfFromText
 from factory_utils import factory_fails
-import pytest
 
 
 def test_text_factory():

@@ -1,7 +1,6 @@
 from zipf.factories import ZipfFromKSequence
 from zipf import Zipf
 import os
-import pytest
 
 
 def test_ksequence_factory():
@@ -27,9 +26,14 @@ def test_ksequence_factory():
         sequence = f.read()
 
     factory_run = factory.run(sequence).round()
+    factory_enrich = factory.enrich(sequence, Zipf()).sort().round()
 
     if factory_run != zipf:
         errors.append(
             "Sequence zipf run is different than expected: %s != %s" % (zipf, factory_run))
+
+    if factory_enrich != zipf:
+        errors.append("Sequence zipf enrich is different than expected: %s != %s" % (
+            zipf, factory_enrich))
 
     assert not errors, "errors occured:\n{}".format("\n".join(errors))

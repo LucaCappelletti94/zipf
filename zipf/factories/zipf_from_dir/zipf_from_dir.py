@@ -18,7 +18,6 @@ MyManager.register('StatisticFromDir', StatisticFromDir)
 class ZipfFromDir(ZipfFromFile):
     def __init__(self, options=None, use_cli=False):
         super().__init__(options)
-        self._opts["sort"] = False
         self._use_cli = use_cli
         self._myManager = MyManager()
         self._myManager.start()
@@ -28,7 +27,7 @@ class ZipfFromDir(ZipfFromFile):
         z = Zipf()
         self._statistic.set_live_process("text to zipf converter")
         for path in paths:
-            z += super().run(path)
+            z = super().enrich(path, z)
             self._statistic.add_zipf()
         self._zipfs.append((z/len(paths)).render())
         self._statistic.set_dead_process("text to zipf converter")
@@ -63,7 +62,7 @@ class ZipfFromDir(ZipfFromFile):
         self._zipfs = Manager().list()
         processes = []
         self._statistic.set_phase("Starting processes")
-        for ch in paths_chunk_generator:
+        for i, ch in enumerate(paths_chunk_generator):
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
@@ -92,12 +91,6 @@ class ZipfFromDir(ZipfFromFile):
 
         self._statistic.set_phase("Normalizing zipfs")
 
-        if len(zipfs) == 0:
-            self._statistic.done()
-            if self._use_cli:
-                self._cli.join()
-            return Zipf()
-
         normalized_zipf = (sum(zipfs)/len(zipfs)).sort()
 
         self._statistic.done()
@@ -106,3 +99,6 @@ class ZipfFromDir(ZipfFromFile):
             self._cli.join()
 
         return normalized_zipf
+
+    def enrich(self, paths, zipf, extensions=None):
+        return zipf+self.run(paths, extensions)
