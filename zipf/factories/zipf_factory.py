@@ -57,6 +57,8 @@ class ZipfFactory():
 
     def set_product(self, product):
         self._product = product
+        self._product_get = product.__getitem__
+        self._product_set = product.__setitem__
 
     def get_product(self):
         return self._product
@@ -88,10 +90,9 @@ class ZipfFactory():
             frequency[element] += 1
 
         _min = self._opts["minimum_count"]
+        get = frequency.__getitem__
 
-        for el in elements:
-            if frequency[el] > _min:
-                yield el
+        return (el for el in elements if get(el) > _min)
 
     def _chain(self, elements):
         chained_elements = []
@@ -113,14 +114,14 @@ class ZipfFactory():
         for el in self._clean(self._filter(self._chain(elements))):
             zset(el, zget(el)+1)
             n += 1
-        if n == 0:
+        if not n:
             return zipf
-        z = zipf/n
         if self._product is not None:
-            product_get = self._product.__getitem__
-            product_set = self._product.__setitem__
+            product_get = self._product_get
+            product_set = self._product_set
             for k, v in zipf.items():
                 product_set(k, product_get(k)+v/n)
+        z = zipf/n
         if self._opts["sort"]:
             return z.sort()
         return z

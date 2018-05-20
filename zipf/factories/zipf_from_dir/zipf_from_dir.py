@@ -26,10 +26,17 @@ class ZipfFromDir(ZipfFromFile):
 
     def _text_to_zipf(self, paths):
         self.set_product(Zipf())
+        use_cli = self._use_cli
         self._statistic.set_live_process("text to zipf converter")
+        n = 50
+        i = 0
         for path in paths:
             super().run(path)
-            self._statistic.add_zipf()
+            if i % n == 0 and use_cli:
+                self._statistic.add_zipf(n)
+            i += 1
+        if use_cli:
+            self._statistic.add_zipf(i % n)
         self._zipfs.append((self.get_product()/len(paths)).render())
         self._statistic.set_dead_process("text to zipf converter")
 
