@@ -3,15 +3,12 @@ import time
 
 class Derivative:
 
-    def __init__(self, degree, resolution=1000):
-        self._degree = degree
+    def __init__(self, resolution=1000):
         self._first = True
         self._old_value = 0
         self._last_time = 0
         self._resolution = resolution
         self._derivatives = []
-        if self._degree > 1:
-            self._sub_derivative = Derivative(self._degree-1)
 
     def step(self, value):
         if self._first:
@@ -30,16 +27,6 @@ class Derivative:
             return self._mean()
         return 0
 
-    def acceleration(self):
-        if self._degree > 1:
-            return self._sub_derivative.speed()
-        return 0
-
-    def jerk(self):
-        if self._degree > 2:
-            return self._sub_derivative.acceleration()
-        return 0
-
     def _mean(self):
         return sum(self._derivatives) / len(self._derivatives)
 
@@ -48,8 +35,6 @@ class Derivative:
             (time.time() - self._last_time)
         self._derivatives.append(new_derivative)
         self._derivatives = self._derivatives[-self._resolution:]
-        if self._degree > 1:
-            self._sub_derivative.step(new_derivative)
 
     def _update(self, value):
         self._last_time = time.time()

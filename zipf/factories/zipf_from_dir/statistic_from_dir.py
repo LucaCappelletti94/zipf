@@ -7,7 +7,7 @@ class StatisticFromDir(Statistic):
         super().__init__()
         self._zipfs = 0
         self._total = 0
-        self._elaboration_speed = Derivative(1, resolution=100)
+        self._elaboration_speed = Derivative(resolution=100)
 
     def set_total_files(self, total_files):
         self._total = total_files

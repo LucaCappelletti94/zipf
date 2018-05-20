@@ -50,7 +50,6 @@ class Statistic:
         return response
 
     def _seconds_to_string(self, delta):
-
         if delta <= 1:
             return "now"
 
