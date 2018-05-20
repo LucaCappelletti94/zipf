@@ -6,50 +6,25 @@ class StatisticFromDir(Statistic):
     def __init__(self):
         super().__init__()
         self._zipfs = 0
-        self._total_files = 0
-        self._empty_files = 0
-        self._empty_lists = 0
+        self._total = 0
         self._elaboration_speed = Derivative(1, resolution=100)
-        self._loader_done = False
-
-    def set_loader_done(self):
-        self._loader_done = True
 
     def set_total_files(self, total_files):
-        self._total_files = total_files
+        self._total = total_files
 
     def add_zipf(self, value=1):
         self._lock.acquire()
         self._zipfs += value
         self._lock.release()
 
-    def add_empty_file(self, value=1):
-        self._lock.acquire()
-        self._empty_files += value
-        self._lock.release()
-
-    def add_empty_list(self, value=1):
-        self._lock.acquire()
-        self._empty_lists += value
-        self._lock.release()
-
-    def is_loader_done(self):
-        return self._loader_done
-
     def get_zipfs(self):
         return self._zipfs
 
-    def get_empty_files(self):
-        return self._empty_files
-
-    def get_empty_lists(self):
-        return self._empty_lists
-
     def get_total_files(self):
-        return self._total_files
+        return self._total
 
     def _remaing_files(self):
-        return self._total_files - self._empty_files - self._empty_lists - self._zipfs
+        return self._total - self._zipfs
 
     def get_elaboration_speed(self):
         if self._remaing_files() == 0:
@@ -57,8 +32,7 @@ class StatisticFromDir(Statistic):
         return self._elaboration_speed.speed()
 
     def step_speeds(self):
-        self._elaboration_speed.step(
-            self._zipfs + self._empty_lists + self._empty_files)
+        self._elaboration_speed.step(self._zipfs)
 
     def get_remaining_elaboration_time(self):
         return self._get_remaining_time(
