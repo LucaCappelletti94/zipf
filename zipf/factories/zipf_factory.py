@@ -21,17 +21,14 @@ class ZipfFactory():
         self._opts = {**self._default_opts, **options}
 
         self.validate_opts()
-        self._word_filter = lambda el: True
         self._product = None
 
         if self._opts["remove_stop_words"]:
             self._load_stop_words()
         else:
-            self._stop_word_filter = lambda el: True
-            self._filter = lambda elements: elements
+            self._stop_word_filter = lambda w: True
 
-        if self._opts["minimum_count"] == 0:
-            self._clean = lambda elements: elements
+        self._word_filter = self._stop_word_filter
 
         if self._opts["chain_min_len"] == self._opts["chain_max_len"] == 1:
             self._chain = lambda elements: elements
@@ -63,10 +60,9 @@ class ZipfFactory():
     def get_product(self):
         return self._product
 
-    def set_word_filter(self, word_filter):
+    def set_word_filter(self, _filter):
         """Sets the function that filters words"""
-        self._word_filter = word_filter
-        self._filter = lambda elements: ZipfFactory._filter(self, elements)
+        self._word_filter = lambda w: _filter(w) and self._stop_word_filter(w)
 
     def _load_stop_words(self):
         path = os.path.join(os.path.dirname(__file__), 'stop_words.json')
@@ -79,41 +75,34 @@ class ZipfFactory():
         return element not in self._stop_words
 
     def _filter(self, elements):
-        for element in elements:
-            if self._stop_word_filter(element) and self._word_filter(element):
-                yield element
+        w = self._word_filter
+        return (el for el in elements if w(el))
 
-    def _clean(self, elements):
+    def _clean(self, generator):
         frequency = defaultdict(int)
-        elements = list(elements)
-        for element in elements:
-            frequency[element] += 1
-
         _min = self._opts["minimum_count"]
-        get = frequency.__getitem__
-
-        return (el for el in elements if get(el) > _min)
+        for el in generator:
+            frequency[el] += 1
+        return ((k, v) for k, v in frequency.items() if v > _min)
 
     def _chain(self, elements):
-        chained_elements = []
-        append = chained_elements.append
         join = self._opts["chaining_character"].join
         _min = self._opts["chain_min_len"]
-        _max = self._opts["chain_max_len"]
+        _max = self._opts["chain_max_len"]+1
         elements = list(elements)
         n = len(elements)
+        n1 = n+1
         for i in range(n):
-            for j in range(i+_min,  min(i+_max+1, n+1)):
+            for j in range(i+_min,  min(i+_max, n1)):
                 yield join(elements[i:j])
 
     def run(self, elements):
         zipf = Zipf()
-        zget = zipf.__getitem__
         zset = zipf.__setitem__
         n = 0
-        for el in self._clean(self._filter(self._chain(elements))):
-            zset(el, zget(el)+1)
-            n += 1
+        for k, v in self._clean(self._filter(self._chain(elements))):
+            zset(k, v)
+            n += v
         if not n:
             return zipf
         if self._product is not None:
