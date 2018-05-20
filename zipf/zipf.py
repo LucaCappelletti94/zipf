@@ -21,7 +21,7 @@ class Zipf(OrderedDict):
     def is_unrendered(self):
         return self._unrendered
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Prints a json dictionary representing the Zipf"""
         if self.is_unrendered():
             self = self.render()
@@ -53,7 +53,7 @@ class Zipf(OrderedDict):
 
         return getkeys
 
-    def __mul__(self, value: Union['Zipf', float, int]) -> 'Zipf':
+    def __mul__(self, value):
         """Multiplies the Zipf by a number or the frequency in another Zipf.
 
             Args:
@@ -79,7 +79,7 @@ class Zipf(OrderedDict):
 
     __rmul__ = __mul__
 
-    def __truediv__(self, value: Union['Zipf', float, int]) -> 'Zipf':
+    def __truediv__(self, value):
         """Divides the Zipf by a number or the frequency in another Zipf.
 
             Args:
@@ -116,7 +116,7 @@ class Zipf(OrderedDict):
         z.keys = self.keys
         return z
 
-    def __add__(self, other: 'Zipf') -> 'Zipf':
+    def __add__(self, other):
         """Sums two Zipf
             Args:
                 other: a given Zipf to be summed
@@ -139,7 +139,7 @@ class Zipf(OrderedDict):
             return self
         return self + other
 
-    def __sub__(self, other: 'Zipf') -> 'Zipf':
+    def __sub__(self, other):
         """Subtracts two Zipf
             Args:
                 other: a given Zipf to be subtracted
@@ -157,7 +157,7 @@ class Zipf(OrderedDict):
         z.keys = self.or_keygen(other)
         return z
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):
         if self.is_unrendered():
             self = self.render()
         if other.is_unrendered():
@@ -175,7 +175,7 @@ class Zipf(OrderedDict):
                 rendered[k] = v
         return rendered
 
-    def remap(self, remapper: 'Zipf')->'Zipf':
+    def remap(self, remapper):
         """Remaps Zipf to the order of another, deleting unshared elements.
 
             Args:
@@ -191,7 +191,7 @@ class Zipf(OrderedDict):
                 remapped[key] = self[key]
         return remapped
 
-    def normalize(self)->'Zipf':
+    def normalize(self):
         """Normalizes the Zipf so that the sum is equal to one
 
             Returns:
@@ -203,7 +203,7 @@ class Zipf(OrderedDict):
             return self/total
         return Zipf(self)
 
-    def cut(self, _min=0, _max=1)->'Zipf':
+    def cut(self, _min=0, _max=1):
         """Returns a Zipf without elements below _min or above _max"""
         result = Zipf()
         for k, v in self.items():
@@ -214,27 +214,27 @@ class Zipf(OrderedDict):
     def round(self):
         return Zipf({k: round(v, 14) for k, v in self.items()})
 
-    def min(self) -> float:
+    def min(self):
         """Returns the value with minimal frequency in the Zipf"""
         self.check_empty()
         return min(self, key=self.get)
 
-    def max(self) -> float:
+    def max(self):
         """Returns the value with maximal frequency in the Zipf"""
         self.check_empty()
         return max(self, key=self.get)
 
-    def mean(self)->float:
+    def mean(self):
         """Determines the mean frequency"""
         self.check_empty()
         return round(mean(list(self.values())), 14)
 
-    def median(self)->float:
+    def median(self):
         """Determines the median frequency"""
         self.check_empty()
         return round(median(list(self.values())), 14)
 
-    def var(self)->float:
+    def var(self):
         """Calculates the variance in the frequencies"""
         self.check_empty()
         return round(var(list(self.values())), 14)
@@ -258,7 +258,7 @@ class Zipf(OrderedDict):
 
     _keysort = cmp_to_key(_compare)
 
-    def sort(self)->'Zipf':
+    def sort(self):
         """Returns the sorted Zipf, based on the frequency value"""
         return Zipf(sorted(
             self.items(),
@@ -271,7 +271,7 @@ class Zipf(OrderedDict):
             return OrderedDict.items(self.render())
         return OrderedDict.items(self)
 
-    def load(path: str) -> 'Zipf':
+    def load(path):
         """Loads a Zipf from the given path.
 
         Args:
@@ -283,7 +283,7 @@ class Zipf(OrderedDict):
         with open(path, "r") as f:
             return Zipf(json.load(f))
 
-    def save(self, path: str):
+    def save(self, path):
         """Saves the Zipf as a dictionary to a given json file
 
         Args:

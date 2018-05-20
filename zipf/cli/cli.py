@@ -69,7 +69,7 @@ class Cli(ABC):
         self._print("$$$", pos)
 
     def _print_label(self, label, value, pos=None):
-        self._print("%s: § %s" % (label, value), pos)
+        self._print("%s: ^ %s" % (label, value), pos)
 
     def _print(self, value, pos=None):
         if pos is None:
@@ -90,8 +90,8 @@ class Cli(ABC):
         for k, v in self._outputs.items():
             if "| $$$ |" == v:
                 v = "| "+("-"*(self._max_len-5))+" |"
-            elif "§" in v:
-                a, b = v.split("§")
+            elif "^" in v:
+                a, b = v.split("^")
                 padding = " "*(self._max_len-len(v))
                 v = a+padding+b
             self._stdscr.addstr(k, 0, v)

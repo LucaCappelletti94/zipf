@@ -32,9 +32,10 @@ class ZipfFromDir(ZipfFromFile):
         i = 0
         for path in paths:
             super().run(path)
+            i += 1
             if i % n == 0 and use_cli:
                 self._statistic.add_zipf(n)
-            i += 1
+
         if use_cli:
             self._statistic.add_zipf(i % n)
         self._zipfs.append((self.get_product()/len(paths)).render())

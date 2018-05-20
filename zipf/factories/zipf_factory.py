@@ -16,9 +16,10 @@ class ZipfFactory():
     }
 
     def __init__(self, options=None):
-        if options is None:
-            options = {}
-        self._opts = {**self._default_opts, **options}
+        self._opts = {}
+        self._opts.update(self._default_opts)
+        if options is not None:
+            self._opts.update(options)
 
         self.validate_opts()
         self._product = None
@@ -33,7 +34,7 @@ class ZipfFactory():
         if self._opts["chain_min_len"] == self._opts["chain_max_len"] == 1:
             self._chain = lambda elements: elements
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Prints a json dictionary representing the Zipf"""
         return json.dumps(self._opts, indent=2)
 
