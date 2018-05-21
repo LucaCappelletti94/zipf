@@ -1,8 +1,8 @@
+"""Setup to install zipf package."""
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-import sys
 import os
 import re
 
@@ -14,11 +14,13 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 
 def read(*parts):
+    """Return the content of the file at given path."""
     with open(os.path.join(here, *parts), 'r') as fp:
         return fp.read()
 
 
 def find_version(*file_paths):
+    """Return the version number from the __version__ file."""
     version_file = read(*file_paths)
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                               version_file, re.M)
@@ -79,11 +81,12 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['requests', 'dictances']
+    install_requires=['requests']
 )
 
 
 def status(s):
+    """Print the version status."""
     print('\033[1m{0}\033[0m'.format(s))
 
 
