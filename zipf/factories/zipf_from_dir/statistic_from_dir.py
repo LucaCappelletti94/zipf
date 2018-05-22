@@ -1,5 +1,6 @@
-from ...statistic import Statistic, Derivative
 from time import time
+
+from ...statistic import Derivative, Statistic
 
 
 class StatisticFromDir(Statistic):

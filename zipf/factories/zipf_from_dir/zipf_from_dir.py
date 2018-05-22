@@ -1,14 +1,21 @@
 """ZipfFromDir create a Zipf from a directory with text files."""
 from glob import glob
 from multiprocessing import Manager, Process, cpu_count
+from multiprocessing.managers import BaseManager
 from os import walk
 from os.path import join
 
 from ...factories import ZipfFromFile
-from ...mp.managers import MyManager
 from ...zipf import Zipf
 from .cli_from_dir import CliFromDir as cli
 from .statistic_from_dir import StatisticFromDir
+
+
+class MyManager(BaseManager):
+    """Extend BaseManager to be customizable."""
+
+    pass
+
 
 MyManager.register('StatisticFromDir', StatisticFromDir)
 

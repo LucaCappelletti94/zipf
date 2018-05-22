@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 import curses
+from abc import ABC, abstractmethod
 from multiprocessing import Process
 from time import sleep
 
@@ -57,7 +57,7 @@ class Cli(ABC):
 
     def _print_fraction(self, label, v1, v2):
         if v2 != 0:
-            perc = str(round(v1/v2*100, 1))+"%"
+            perc = str(round(v1 / v2 * 100, 1)) + "%"
 
             self._print_label(label, "%s/%s %s" % (
                 v1,
@@ -75,7 +75,7 @@ class Cli(ABC):
         if pos is None:
             pos = self._i
 
-        value = "| "+value+" |"
+        value = "| " + value + " |"
 
         self._max_len = max(self._max_len, len(value))
 
@@ -86,21 +86,21 @@ class Cli(ABC):
 
     def _print_all(self):
         self._print_frame(0)
-        self._print_frame(self._i-1)
+        self._print_frame(self._i - 1)
         for k, v in self._outputs.items():
             if "| $$$ |" == v:
-                v = "| "+("-"*(self._max_len-5))+" |"
+                v = "| " + ("-" * (self._max_len - 5)) + " |"
             elif "^" in v:
                 a, b = v.split("^")
-                padding = " "*(self._max_len-len(v))
-                v = a+padding+b
+                padding = " " * (self._max_len - len(v))
+                v = a + padding + b
             self._stdscr.addstr(k, 0, v)
 
         self._stdscr.refresh()
 
     def _clear(self):
         for i in range(self._i):
-            self._stdscr.addstr(i, 0, " "*self._max_len)
+            self._stdscr.addstr(i, 0, " " * self._max_len)
 
         self._stdscr.refresh()
         self._i = 1
