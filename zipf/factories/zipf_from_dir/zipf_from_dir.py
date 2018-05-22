@@ -1,16 +1,13 @@
-from multiprocessing import Manager, Pool, Process, cpu_count
-from ...mp.managers import MyManager
-from ...utils import chunks
-from ...zipf import Zipf
-from ...factories import ZipfFromFile
-from .statistic_from_dir import StatisticFromDir
-from .cli_from_dir import CliFromDir as cli
-from math import ceil
-
 from glob import glob
+from multiprocessing import Manager, Process, cpu_count
 from os import walk
 from os.path import join
-import re
+
+from ...factories import ZipfFromFile
+from ...mp.managers import MyManager
+from ...zipf import Zipf
+from .cli_from_dir import CliFromDir as cli
+from .statistic_from_dir import StatisticFromDir
 
 MyManager.register('StatisticFromDir', StatisticFromDir)
 
@@ -38,7 +35,7 @@ class ZipfFromDir(ZipfFromFile):
 
         if use_cli:
             self._statistic.add_zipf(i % n)
-        self._zipfs.append((self.get_product()/len(paths)).render())
+        self._zipfs.append((self.get_product() / len(paths)).render())
         self._statistic.set_dead_process("text to zipf converter")
 
     def _validate_base_paths(self, base_paths):
@@ -55,23 +52,30 @@ class ZipfFromDir(ZipfFromFile):
             self._extensions = ["*"]
 
     def _load_paths(self, base_paths):
+        n = self._processes_number
         files_list = []
+        for i in range(n):
+            files_list.append([])
+        i = 0
+        files_number = 0
         for path in self._validate_base_paths(base_paths):
             for extension in self._extensions:
-                files_list += [y for x in walk(path)
-                               for y in glob(join(x[0], '*.%s' % extension))]
+                for x in walk(path):
+                    for y in glob(join(x[0], '*.%s' % extension)):
+                        files_list[i].append(y)
+                        files_number += 1
+                        i = (i + 1) % n
 
-        files_number = len(files_list)
         if files_number == 0:
             return None
         self._statistic.set_total_files(files_number)
-        return chunks(files_list, ceil(files_number/self._processes_number))
+        return files_list
 
-    def _render_zipfs(self, paths_chunk_generator):
+    def _render_zipfs(self, chunked_paths):
         self._zipfs = Manager().list()
         processes = []
         self._statistic.set_phase("Starting processes")
-        for ch in paths_chunk_generator:
+        for ch in chunked_paths:
             process = Process(target=self._text_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
@@ -89,14 +93,14 @@ class ZipfFromDir(ZipfFromFile):
             self._cli.run()
 
         self._statistic.set_phase("Loading file paths")
-        paths_chunk_generator = self._load_paths(paths)
-        if paths_chunk_generator is None:
+        chunked_paths = self._load_paths(paths)
+        if chunked_paths is None:
             self._statistic.done()
             if self._use_cli:
                 self._cli.join()
             return Zipf()
 
-        zipfs = self._render_zipfs(paths_chunk_generator)
+        zipfs = self._render_zipfs(chunked_paths)
 
         self._statistic.set_phase("Normalizing zipfs")
 
@@ -106,7 +110,7 @@ class ZipfFromDir(ZipfFromFile):
                 self._cli.join()
             return Zipf()
 
-        normalized_zipf = (sum(zipfs)/len(zipfs)).sort()
+        normalized_zipf = (sum(zipfs) / len(zipfs)).sort()
 
         self._statistic.done()
 
