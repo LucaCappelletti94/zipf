@@ -1,6 +1,8 @@
-import os
 import json
+import os
+
 import pytest
+
 from zipf import Zipf
 
 _options_for_tests = {
@@ -78,7 +80,7 @@ def factory_break_options(Factory):
         right_option = {}
         right_option["chain_min_len"] = i
         for j in non_zero_naturals:
-            right_option["chain_max_len"] = i+j
+            right_option["chain_max_len"] = i + j
             right_options.append(right_option)
 
     right_options.append({
@@ -146,7 +148,7 @@ def factory_fails(Factory, path, prepare=None, run=None):
         result = Zipf.load(result_path).sort().round()
         factory = prepare(options=_get_options_for(test))
 
-        factory_run = run(factory, data).round()
+        factory_run = run(factory, data).sort().round()
         if result != factory_run:
             errors.append("%s has not expected result on run test '%s': %s != %s" % (
                 Factory.__name__, test, result, factory_run))
