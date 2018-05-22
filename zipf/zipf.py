@@ -101,7 +101,7 @@ class Zipf(OrderedDict):
 
     def __neg__(self):
         """Return the negated zipf."""
-        return -1*self
+        return -1 * self
 
     def __add__(self, other):
         """Sum two Zipf."""
@@ -155,7 +155,7 @@ class Zipf(OrderedDict):
         self.check_empty()
         total = sum(list(self.values()))
         if total != 1:
-            return self/total
+            return self / total
         return Zipf(self)
 
     def cut(self, _min=0, _max=1):
