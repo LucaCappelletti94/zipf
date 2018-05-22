@@ -1,3 +1,4 @@
+"""ZipfFromDir create a Zipf from a directory with text files."""
 from glob import glob
 from multiprocessing import Manager, Process, cpu_count
 from os import walk
@@ -13,7 +14,10 @@ MyManager.register('StatisticFromDir', StatisticFromDir)
 
 
 class ZipfFromDir(ZipfFromFile):
+    """ZipfFromDir create a Zipf from a directory with text files."""
+
     def __init__(self, options=None, use_cli=False):
+        """Create a ZipfFromDir with give options."""
         super().__init__(options)
         self._opts["sort"] = False
         self._use_cli = use_cli
@@ -21,7 +25,8 @@ class ZipfFromDir(ZipfFromFile):
         self._myManager.start()
         self._processes_number = cpu_count()
 
-    def _text_to_zipf(self, paths):
+    def _paths_to_zipf(self, paths):
+        """Create a Zipf from given paths."""
         self.set_product(Zipf())
         use_cli = self._use_cli
         self._statistic.set_live_process("text to zipf converter")
@@ -35,48 +40,52 @@ class ZipfFromDir(ZipfFromFile):
 
         if use_cli:
             self._statistic.add_zipf(i % n)
-        self._zipfs.append((self.get_product() / len(paths)).render())
+        self._zipfs.append(self.get_product() / len(paths))
         self._statistic.set_dead_process("text to zipf converter")
 
     def _validate_base_paths(self, base_paths):
+        """Validate paths argument."""
         if isinstance(base_paths, str):
             return [base_paths]
         if isinstance(base_paths, list):
             return base_paths
         raise ValueError("No paths were given.")
 
-    def _prepare_extensions(self, extensions):
+    def _setup_extensions(self, extensions):
+        """Handle setup of given extensions list."""
         if extensions:
             self._extensions = extensions
         else:
             self._extensions = ["*"]
 
     def _load_paths(self, base_paths):
+        """Recursively load paths from given base paths."""
         n = self._processes_number
-        files_list = []
+        files_lists = []
         for i in range(n):
-            files_list.append([])
+            files_lists.append([])
         i = 0
         files_number = 0
         for path in self._validate_base_paths(base_paths):
             for extension in self._extensions:
                 for x in walk(path):
                     for y in glob(join(x[0], '*.%s' % extension)):
-                        files_list[i].append(y)
+                        files_lists[i].append(y)
                         files_number += 1
                         i = (i + 1) % n
 
         if files_number == 0:
             return None
         self._statistic.set_total_files(files_number)
-        return files_list
+        return (files_list for files_list in files_lists if len(files_list))
 
     def _render_zipfs(self, chunked_paths):
+        """Execute Zipf rendering from paths in multiprocessing."""
         self._zipfs = Manager().list()
         processes = []
         self._statistic.set_phase("Starting processes")
         for ch in chunked_paths:
-            process = Process(target=self._text_to_zipf, args=(ch,))
+            process = Process(target=self._paths_to_zipf, args=(ch,))
             process.start()
             processes.append(process)
         self._statistic.set_phase("Converting files to zipfs")
@@ -85,8 +94,9 @@ class ZipfFromDir(ZipfFromFile):
         return self._zipfs
 
     def run(self, paths, extensions=None):
+        """Create and return zipf created from given paths."""
         self._statistic = self._myManager.StatisticFromDir()
-        self._prepare_extensions(extensions)
+        self._setup_extensions(extensions)
 
         if self._use_cli:
             self._cli = cli(self._statistic)
@@ -110,7 +120,7 @@ class ZipfFromDir(ZipfFromFile):
                 self._cli.join()
             return Zipf()
 
-        normalized_zipf = (sum(zipfs) / len(zipfs)).sort()
+        normalized_zipf = sum(zipfs) / len(zipfs)
 
         self._statistic.done()
 
