@@ -2,3 +2,5 @@ dist/
 zipf.egg-info
 __pycache__/
 \.cache/
+\.ipynb_*
+*.ipynb
