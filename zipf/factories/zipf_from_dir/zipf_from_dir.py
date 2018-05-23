@@ -131,7 +131,7 @@ class ZipfFromDir(ZipfFromFile):
                 self._cli.join()
             return Zipf()
 
-        normalized_zipf = sum(zipfs) / len(zipfs)
+        normalized_zipf = (sum(zipfs) / len(zipfs)).sort()
 
         self._statistic.done()
 
