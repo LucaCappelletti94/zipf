@@ -36,7 +36,6 @@ class Cli(ABC):
             curses.echo()
             curses.nocbreak()
             curses.endwin()
-            pass
 
     @abstractmethod
     def _update(self):
