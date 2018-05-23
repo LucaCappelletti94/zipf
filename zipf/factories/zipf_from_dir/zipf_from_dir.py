@@ -67,7 +67,7 @@ class ZipfFromDir(ZipfFromFile):
 
     def _load_paths(self, base_paths):
         """Recursively load paths from given base paths."""
-        n = self._processes_number
+        n = self._processes_number * 4
         files_lists = []
         for i in range(n):
             files_lists.append([])
@@ -84,20 +84,24 @@ class ZipfFromDir(ZipfFromFile):
         if files_number == 0:
             return None
         self._statistic.set_total_files(files_number)
-        return (files_list for files_list in files_lists if len(files_list))
+        return [files_list for files_list in files_lists if len(files_list)]
 
-    def _render_zipfs(self, chunked_paths):
+    def _render(self, chunks):
+        processes = []
+        for ch in chunks:
+            processes.append(
+                Process(target=self._paths_to_zipf, args=(ch,)))
+        [p.start() for p in processes]
+        [p.join() for p in processes]
+
+    def _render_zipfs(self, chunks):
         """Execute Zipf rendering from paths in multiprocessing."""
         self._zipfs = Manager().list()
-        processes = []
-        self._statistic.set_phase("Starting processes")
-        for ch in chunked_paths:
-            process = Process(target=self._paths_to_zipf, args=(ch,))
-            process.start()
-            processes.append(process)
-        self._statistic.set_phase("Converting files to zipfs")
-        for p in processes:
-            p.join()
+        j = 0
+        for i in range(0, len(chunks), self._processes_number):
+            self._statistic.set_phase("Starting processes, iteration %s" % j)
+            j += 1
+            self._render(chunks[i:i + self._processes_number])
         return self._zipfs
 
     def run(self, paths, extensions=None):

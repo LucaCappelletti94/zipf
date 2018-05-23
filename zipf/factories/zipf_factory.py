@@ -1,7 +1,6 @@
 """ZipfFactory creates Zipf objects."""
 import json
 import os
-from collections import defaultdict
 
 from ..zipf import Zipf
 
@@ -88,14 +87,6 @@ class ZipfFactory():
         w = self._word_filter
         return (word for word in words if w(word))
 
-    def _clean(self, generator):
-        """Return a generator without low frequency words."""
-        frequency = defaultdict(int)
-        _min = self._opts["minimum_count"]
-        for el in generator:
-            frequency[el] += 1
-        return ((k, v) for k, v in frequency.items() if v > _min)
-
     def _chain(self, elements):
         """Return a generator with chained words."""
         join = self._opts["chaining_character"].join
@@ -112,10 +103,22 @@ class ZipfFactory():
         """Return a zipf created from the given elements."""
         zipf = Zipf()
         zset = zipf.__setitem__
+        zget = zipf.__getitem__
         n = 0
-        for k, v in self._clean(self._filter(self._chain(elements))):
-            zset(k, v)
-            n += v
+        gen = self._filter(self._chain(elements))
+        for k in gen:
+            zset(k, zget(k) + 1)
+            n += 1
+        _min = self._opts["minimum_count"]
+        if _min > 1:
+            remove = []
+            append = remove.append
+            for k, v in zipf.items():
+                if v <= _min:
+                    append(k)
+                    n -= v
+            for k in remove:
+                del zipf[k]
         if not n:
             return zipf
         if self._product is not None:
