@@ -20,17 +20,22 @@ class Zipf(OrderedDict):
         """Assign the key sources."""
         self._keys_sources = first_source, second_source
 
-    def _set_get_sources(self, first_source, second_source, operation, keygen):
+    def _set_get_sources(self, first, second, operation, operator):
         """Assign the get sources and operation."""
         self._unrendered = True
-        if isinstance(second_source, (int, float)):
-            self.keys = first_source.keys
+        if isinstance(second, (int, float)):
+            self.keys = first.keys
             self.__getitem__ = self._get_non_rendered_item
         else:
-            self.keys = keygen
-            self._set_key_sources(first_source, second_source)
+            if operator == 'or':
+                self.keys = self._or_keys
+                self._estimated_len = len(first) + len(second)
+            else:
+                self.keys = self._and_keys
+                self._estimated_len = min(len(first), len(second))
+            self._set_key_sources(first, second)
             self.__getitem__ = self._get_non_rendered_item_from_zipfs
-        self._get_sources = first_source, second_source, operation
+        self._get_sources = first, second, operation
 
     def _get_non_rendered_item_from_zipfs(self, key):
         """Return the element key combining the original zipfs."""
@@ -86,7 +91,7 @@ class Zipf(OrderedDict):
     def __mul__(self, value):
         """Multiply the Zipf by a number or the frequency in another Zipf."""
         z = Zipf()
-        z._set_get_sources(self, value, mul, z._and_keys)
+        z._set_get_sources(self, value, mul, 'and')
         return z
 
     __rmul__ = __mul__
@@ -96,7 +101,7 @@ class Zipf(OrderedDict):
         if value == 0:
             raise ValueError("Cannot divide by zero.")
         z = Zipf()
-        z._set_get_sources(self, value, truediv, z._and_keys)
+        z._set_get_sources(self, value, truediv, 'and')
         return z
 
     def __neg__(self):
@@ -106,7 +111,7 @@ class Zipf(OrderedDict):
     def __add__(self, other):
         """Sum two Zipf."""
         z = Zipf()
-        z._set_get_sources(self, other, add, z._or_keys)
+        z._set_get_sources(self, other, add, 'or')
         return z
 
     def __radd__(self, other):
@@ -118,7 +123,7 @@ class Zipf(OrderedDict):
     def __sub__(self, other):
         """Sub two Zipf."""
         z = Zipf()
-        z._set_get_sources(self, other, sub, z._or_keys)
+        z._set_get_sources(self, other, sub, 'or')
         return z
 
     def __eq__(self, other):
@@ -130,6 +135,12 @@ class Zipf(OrderedDict):
         if other.is_unrendered():
             other = other.render()
         return OrderedDict.__eq__(self, other)
+
+    def __len__(self):
+        """Return len of zipf, estimated if zipf is unrendered."""
+        if self.is_unrendered():
+            return self._estimated_len
+        return OrderedDict.__len__(self)
 
     def render(self):
         """Render the __getitem__, so that it does not call its alias chain."""
