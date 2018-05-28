@@ -25,6 +25,7 @@ class Zipf(OrderedDict):
         self._unrendered = True
         if isinstance(second, (int, float)):
             self.keys = first.keys
+            self._estimated_len = len(first)
             self.__getitem__ = self._get_non_rendered_item
         else:
             if operator == 'or':
