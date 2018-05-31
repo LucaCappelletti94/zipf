@@ -105,6 +105,12 @@ class Zipf(OrderedDict):
         z._set_get_sources(self, value, truediv, 'and')
         return z
 
+    def __pow__(self, value):
+        """Elevate the Zipf by a number or the frequency in another Zipf."""
+        z = Zipf()
+        z._set_get_sources(self, value, pow, 'or')
+        return z
+
     def __neg__(self):
         """Return the negated zipf."""
         return -1 * self
