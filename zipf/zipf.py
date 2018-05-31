@@ -165,7 +165,7 @@ class Zipf(OrderedDict):
         remapped._set_key_sources(remapper, self)
         remapped.keys = remapped._and_keys
         remapped._unrendered = True
-        remapped._estimated_len = min(len(first), len(second))
+        remapped._estimated_len = min(len(remapper), len(self))
         remapped.__getitem__ = self.__getitem__
         return remapped
 
