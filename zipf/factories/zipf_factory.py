@@ -10,6 +10,7 @@ class ZipfFactory():
 
     _default_opts = {
         "remove_stop_words": False,
+        "stop_words": "it",
         "minimum_count": 0,
         "chain_min_len": 1,
         "chain_max_len": 1,
@@ -72,7 +73,8 @@ class ZipfFactory():
 
     def _load_stop_words(self):
         """Load from path the stopwords."""
-        path = os.path.join(os.path.dirname(__file__), 'stop_words.json')
+        path = os.path.join(os.path.dirname(__file__),
+                            'stop_words_%s.json' % self._opts["stop_words"])
         with open(path, "r") as f:
             self._stop_words = {}
             for w in json.load(f):

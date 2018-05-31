@@ -1,2 +1,3 @@
 include README.rst
-include zipf/factories/stop_words.json
+include zipf/factories/stop_words_it.json
+include zipf/factories/stop_words_en.json
