@@ -8,7 +8,10 @@ class ZipfFromFile(ZipfFromText):
     def __init__(self, options=None):
         """Create a ZipfFromFile with give options."""
         super().__init__(options)
-        self._file_interface = lambda f: f.read()
+        self._file_interface = self._default_file_interface
+
+    def _default_file_interface(self, f):
+        return f.read()
 
     def set_interface(self, file_interface):
         """Set the interface with which read the text content of the file."""

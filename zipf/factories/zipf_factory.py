@@ -31,18 +31,25 @@ class ZipfFactory():
         if self._opts["remove_stop_words"]:
             self._load_stop_words()
         else:
-            self._stop_word_filter = lambda w: True
+            self._stop_word_filter = self._tautology
 
         self._word_filter = self._stop_word_filter
+        self._custom_filter = self._tautology
 
         if self._opts["chain_min_len"] == self._opts["chain_max_len"] == 1:
-            self._chain = lambda elements: elements
+            self._chain = self._elements_proxy
 
     def __str__(self):
         """Print a json dictionary representing the factory."""
         return json.dumps(self._opts, indent=2)
 
     _repr_html_ = __repr__ = __str__
+
+    def _tautology(self, *args):
+        return True
+
+    def _elements_proxy(self, elements):
+        return elements
 
     def _validate_opts(self):
         """Validate user options."""
@@ -67,9 +74,13 @@ class ZipfFactory():
         """Return the elaborated product."""
         return self._product
 
+    def _word_filter_custom(self, word):
+        return self._custom_filter(word) and self._stop_word_filter(word)
+
     def set_word_filter(self, _filter):
         """Set the function that filters words."""
-        self._word_filter = lambda w: _filter(w) and self._stop_word_filter(w)
+        self._custom_filter = _filter
+        self._word_filter = self._word_filter_custom
 
     def _load_stop_words(self):
         """Load from path the stopwords."""
