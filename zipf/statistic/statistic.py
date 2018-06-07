@@ -71,6 +71,12 @@ class Statistic:
     def get_running_processes(self):
         return self._running_processes
 
+    def reset(self):
+        self._running_processes = {}
+        self._phase = ""
+        self._done = False
+        self._last_estimate_update = 0
+
     def _get_remaining_time(self, delta, speed):
         if delta == 0:
             return "now"

@@ -40,3 +40,9 @@ class StatisticFromDir(Statistic):
             self._remaing_files(),
             self._elaboration_speed.speed()
         )
+
+    def reset(self):
+        super().reset()
+        self._zipfs = 0
+        self._total = 0
+        self._elaboration_speed = Derivative(resolution=100)
