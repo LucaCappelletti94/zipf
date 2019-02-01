@@ -5,6 +5,7 @@ from functools import cmp_to_key
 from operator import add, mul, sub, truediv
 
 from numpy import mean, median, var
+import numpy as np
 
 
 class Zipf(OrderedDict):
@@ -260,3 +261,11 @@ class Zipf(OrderedDict):
         """Save the Zipf as a dictionary to a given json file."""
         with open(path, "w") as f:
             json.dump(self, f)
+
+    def build_keymap(zipfs):
+        return set([e for z in zipfs for e in z.keys()])
+
+    def to_sparse_matrix(zipfs, keymap):
+        return np.array([
+            [z[e] for e in keymap] for z in zipfs
+        ])
